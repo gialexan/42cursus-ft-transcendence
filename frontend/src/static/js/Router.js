@@ -5,6 +5,7 @@ import Dashboard from './views/private/dashboard/Dashboard.js';
 import Profile from './views/private/profile/Profile.js';
 import Chat from './views/private/chat/Chat.js';
 import Pong from './views/private/pong/Pong.js';
+import ValidateMFA from './views/private/mfa/ValidateMFA.js';
 
 
 export async function Router() {
@@ -27,6 +28,9 @@ export async function Router() {
         case '/dashboard':
             component = await Dashboard();
             break;
+        case '/mfa':
+            component = await ValidateMFA();
+            break;            
         case '/profile':
             component = await Profile();
             break;  

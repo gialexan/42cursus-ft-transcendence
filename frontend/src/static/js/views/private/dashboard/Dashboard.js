@@ -33,6 +33,13 @@ export default async function Dashboard() {
 
     const element = document.createElement('div');
     const playerInfo = await fetchApiData('/api/player-info');
+    
+    // Verifique se o MFA está habilitado e se o token de validação do MFA não está no localStorage
+    if (playerInfo && playerInfo.is_mfa_enabled && !localStorage.getItem('tokenMfaValid')) {
+        navigateTo('/mfa');
+        return null; // Não renderize o dashboard
+    }
+    
     const playerScore = await fetchApiData('/api/player-score');
 
     // Parte do código onde você gera a tabela de pontos
