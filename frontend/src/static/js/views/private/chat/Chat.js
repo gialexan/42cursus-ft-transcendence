@@ -1,7 +1,40 @@
 import { sendChatMessage } from '/static/js/services/events/client.js';
 
+async function fetchData(url, jwtToken) {
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
+    }
+}
+
+
 export default function Chat() {
     const element = document.createElement('div');
+    let userName = "anonymous";
+
+    const jwtToken = localStorage.getItem('jwtToken');
+    const url = '/api/player-info/';
+    fetchData(url, jwtToken)
+    .then(data => {
+        userName = data["nickname"] ? data["nickname"] : data["username"]
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+        userName = "anonymous"
+    });
 
     element.innerHTML = `
         <div class="container mt-3">
@@ -38,10 +71,10 @@ export default function Chat() {
 
     // Event listener for send button
     sendButton.addEventListener('click', () => {
-        const message = chatInput.value.trim();
+        const message = userName + ":" + chatInput.value.trim();
         if (message) {
             sendChatMessage(message);
-            appendMessage(`You: ${message}`);
+            // appendMessage(`You: ${message}`);
             chatInput.value = '';
         }
     });
