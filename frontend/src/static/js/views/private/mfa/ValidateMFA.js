@@ -1,4 +1,4 @@
-import { navigateTo } from '/static/js/router.js';
+import { navigateTo } from '/static/js/Router.js';
 
 export default function ValidateMFA() {
     const element = document.createElement('div');
@@ -91,10 +91,10 @@ function validateMFA(mfaCode) {
             if (result.status === 'success') {
                 // Exibir pop-up de sucesso
                 alert('MFA validado com sucesso!');
-                
+
                 // Salvar token no localStorage
                 localStorage.setItem('tokenMfaValid', 'true');
-                
+
                 // Redirecionar para /dashboard
                 navigateTo('/dashboard');
             } else {
