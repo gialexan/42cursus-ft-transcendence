@@ -1,4 +1,4 @@
-import { navigateTo } from '/static/js/router.js';
+import { navigateTo } from '/static/js/Router.js';
 
 export function handleCallback() {
     const urlParams = new URLSearchParams(window.location.search);

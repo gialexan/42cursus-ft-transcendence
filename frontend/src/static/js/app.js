@@ -1,4 +1,4 @@
-import { Router } from '/static/js/router.js';
+import { Router } from '/static/js/Router.js';
 import { handleCallback } from './services/callbackHandler.js';
 
 document.addEventListener('DOMContentLoaded', () => {
