@@ -1,5 +1,6 @@
 import { checkJWT } from '/static/js/services/checkJWT.js';
 import { navigateTo } from '/static/js/Router.js';
+import { connectWebSocketNotify } from '/static/js/services/events/clientNotification.js';
 
 async function fetchApiData(url) {
     const jwtToken = localStorage.getItem('jwtToken');
@@ -89,6 +90,8 @@ export default async function Dashboard() {
         : '<tr><td colspan="3">No players found</td></tr>';
 
     console.log("Player Info:", playerInfo);
+    console.log("Player Info Username:", playerInfo.username);
+    console.log("Player Info User UUID:", playerInfo.user_uuid);
 
     element.innerHTML = `
         <!-- Navigation bar | Web component -->
@@ -176,6 +179,11 @@ export default async function Dashboard() {
 
     // Atualizar a lista de jogadores a cada 30 segundos
     setInterval(() => updatePlayersStatus(element), 30000);
+
+    // Conectar ao WebSocket de notificação
+    if (playerInfo) {
+        connectWebSocketNotify(playerInfo.username, playerInfo.user_uuid);
+    }
 
     return element;
 }

@@ -24,7 +24,7 @@ function connectWebSocketChat() {
         isConnected = false;
         console.log('Connection closed');
         // Attempt to reconnect after a delay
-        setTimeout(connectWebSocket, 5000);
+        setTimeout(connectWebSocketChat, 5000);
     };
 
     socket.onerror = function(error) {

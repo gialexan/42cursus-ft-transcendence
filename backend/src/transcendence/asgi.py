@@ -4,6 +4,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from django.urls import path
 from events.consumers import ChatConsumer
+from events.consumers import NotificationsConsumer
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'transcendence.settings')
 
@@ -12,6 +13,7 @@ application = ProtocolTypeRouter({
     "websocket": AuthMiddlewareStack(
         URLRouter([
             path("ws/chat/", ChatConsumer.as_asgi()),
+            path("ws/notifications/", NotificationsConsumer.as_asgi()),
         ])
     ),
 })

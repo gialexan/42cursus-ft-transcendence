@@ -1,6 +1,9 @@
 import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
+import logging
+
+logger = logging.getLogger(__name__)
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
@@ -36,4 +39,84 @@ class ChatConsumer(WebsocketConsumer):
         self.send(text_data=json.dumps({
             'type': 'chat_message',
             'message': message
+        }))
+
+
+class NotificationsConsumer(WebsocketConsumer):
+    def connect(self):
+        if self.scope['user'].is_authenticated:
+            self.accept()
+            self.player_id = self.scope['user'].id
+            self.player_username = self.scope['user'].username
+            self.player_uuid = str(self.scope['user'].user_uuid)
+            
+            async_to_sync(self.channel_layer.group_add)(
+                f'user_{self.player_username}',
+                self.channel_name
+            )
+            async_to_sync(self.channel_layer.group_add)(
+                f'uuid_{self.player_uuid}',
+                self.channel_name
+            )
+            async_to_sync(self.channel_layer.group_add)(
+                "all_users",
+                self.channel_name
+            )
+        else:
+            self.close()
+
+    def disconnect(self, close_code):
+        if self.scope['user'].is_authenticated:
+            async_to_sync(self.channel_layer.group_discard)(
+                f'user_{self.player_username}',
+                self.channel_name
+            )
+            async_to_sync(self.channel_layer.group_discard)(
+                f'uuid_{self.player_uuid}',
+                self.channel_name
+            )
+            async_to_sync(self.channel_layer.group_discard)(
+                "all_users",
+                self.channel_name
+            )
+
+    def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        message_type = text_data_json.get('type')
+
+        if message_type == 'notification':
+            notification = text_data_json.get('notification')
+            target_username = text_data_json.get('username', None)
+            target_uuid = text_data_json.get('user_uuid', None)
+
+            if target_username:
+                async_to_sync(self.channel_layer.group_send)(
+                    f'user_{target_username}',
+                    {
+                        'type': 'send_notification',
+                        'notification': notification
+                    }
+                )
+            elif target_uuid:
+                async_to_sync(self.channel_layer.group_send)(
+                    f'uuid_{target_uuid}',
+                    {
+                        'type': 'send_notification',
+                        'notification': notification
+                    }
+                )
+            else:
+                async_to_sync(self.channel_layer.group_send)(
+                    "all_users",
+                    {
+                        'type': 'send_notification',
+                        'notification': notification
+                    }
+                )
+
+    def send_notification(self, event):
+        notification = event['notification']
+        self.send(text_data=json.dumps({
+            'type': 'notification',
+            'notification': notification
         }))
