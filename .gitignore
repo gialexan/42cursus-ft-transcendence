@@ -15,6 +15,7 @@ key.json
 env
 __pycache__
 .ruff.toml
+**migrations**
 
 
 postgres_data/
