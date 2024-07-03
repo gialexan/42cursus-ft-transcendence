@@ -1,4 +1,4 @@
-import { sendChatMessage } from '/static/js/services/events/client.js';
+import { connectWebSocketChat, sendChatMessage } from '/static/js/services/events/clientChat.js';
 
 async function fetchData(url, jwtToken) {
     try {
@@ -19,7 +19,6 @@ async function fetchData(url, jwtToken) {
         console.error('There has been a problem with your fetch operation:', error);
     }
 }
-
 
 export default function Chat() {
     const element = document.createElement('div');
@@ -83,6 +82,8 @@ export default function Chat() {
     window.displayChatMessage = (message) => {
         appendMessage(message);
     };
+
+    connectWebSocketChat();
 
     return element;
 }

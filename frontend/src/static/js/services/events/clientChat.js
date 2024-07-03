@@ -1,12 +1,12 @@
 let socket;
 let isConnected = false;
 
-function connectWebSocket() {
-    socket = new WebSocket('ws://localhost:8000/ws/game/');
+function connectWebSocketChat() {
+    socket = new WebSocket('ws://localhost:8000/ws/chat/');
 
     socket.onopen = function(e) {
         isConnected = true;
-        console.log('Connection established');
+        console.log('Connection established with chat');
     };
 
     socket.onmessage = function(event) {
@@ -43,10 +43,6 @@ function sendChatMessage(message) {
     }
 }
 
-function displayNotification(message) {
-    alert(message); // Você pode usar outra forma de exibição, como um modal ou um toast
-}
-
 function displayChatMessage(message) {
     if (typeof window.displayChatMessage === 'function') {
         window.displayChatMessage(message);
@@ -55,19 +51,7 @@ function displayChatMessage(message) {
     }
 }
 
-// Para enviar uma notificação
-function sendNotification(notification) {
-    if (isConnected) {
-        socket.send(JSON.stringify({
-            'type': 'notification',
-            'notification': notification
-        }));
-    } else {
-        console.error('WebSocket is not connected');
-    }
-}
-
 // Inicializar a conexão WebSocket
-connectWebSocket();
+// connectWebSocketChat();
 
-export { sendChatMessage, sendNotification };
+export { connectWebSocketChat, sendChatMessage };

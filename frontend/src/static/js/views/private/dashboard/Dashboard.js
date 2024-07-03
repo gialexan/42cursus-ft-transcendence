@@ -1,6 +1,5 @@
 import { checkJWT } from '/static/js/services/checkJWT.js';
 import { navigateTo } from '/static/js/Router.js';
-import { sendChatMessage } from '/static/js/services/events/client.js';
 
 async function fetchApiData(url) {
     const jwtToken = localStorage.getItem('jwtToken');
