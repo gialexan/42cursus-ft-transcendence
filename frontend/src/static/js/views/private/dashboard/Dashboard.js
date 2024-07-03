@@ -25,6 +25,27 @@ async function fetchApiData(url) {
     }
 }
 
+async function updatePlayersStatus(element) {
+    const playersStatus = await fetchApiData('/api/players-status');
+
+    // Parte do código onde você gera a lista de jogadores online/offline
+    const playersHtml = playersStatus && playersStatus.players
+        ? playersStatus.players.map(player => `
+            <tr>
+                <td>${player.nickname || player.username}</td>
+                <td>${player.status_player ? 'Online' : 'Offline'}</td>
+                <td>
+                    <button class="btn ${player.status_player ? 'btn-success' : 'btn-secondary'}" ${player.status_player ? '' : 'disabled'} onclick="handleFriendship('${player.username}')">Friendship</button>
+                    <button class="btn ${player.status_player ? 'btn-success' : 'btn-secondary'}" ${player.status_player ? '' : 'disabled'} onclick="handleGameparty('${player.username}')">Gameparty</button>
+                </td>
+            </tr>
+        `).join('')
+        : '<tr><td colspan="3">No players found</td></tr>';
+
+    const playersTableBody = element.querySelector('#players-table-body');
+    playersTableBody.innerHTML = playersHtml;
+}
+
 export default async function Dashboard() {
     if (!await checkJWT()) {
         return null; // Stop rendering if JWT is not valid
@@ -40,6 +61,7 @@ export default async function Dashboard() {
     }
 
     const playerScore = await fetchApiData('/api/player-score');
+    const playersStatus = await fetchApiData('/api/players-status');
 
     // Parte do código onde você gera a tabela de pontos
     const scoresHtml = playerScore && playerScore.scores
@@ -51,6 +73,20 @@ export default async function Dashboard() {
             </tr>
         `).join('')
         : '<tr><td colspan="3">No Score found</td></tr>';
+
+    // Parte do código onde você gera a lista de jogadores online/offline
+    const playersHtml = playersStatus && playersStatus.players
+        ? playersStatus.players.map(player => `
+            <tr>
+                <td>${player.nickname || player.username}</td>
+                <td>${player.status_player ? 'Online' : 'Offline'}</td>
+                <td>
+                    <button class="btn ${player.status_player ? 'btn-success' : 'btn-secondary'}" ${player.status_player ? '' : 'disabled'} onclick="handleFriendship('${player.username}')">Friendship</button>
+                    <button class="btn ${player.status_player ? 'btn-success' : 'btn-secondary'}" ${player.status_player ? '' : 'disabled'} onclick="handleGameparty('${player.username}')">Gameparty</button>
+                </td>
+            </tr>
+        `).join('')
+        : '<tr><td colspan="3">No players found</td></tr>';
 
     console.log("Player Info:", playerInfo);
 
@@ -90,9 +126,24 @@ export default async function Dashboard() {
                     </div>
                 </div>
 
-                <!-- Right column for Scoreboard -->
+                <!-- Right column for Players Status and Scoreboard -->
                 <div class="col-md-6">
                     <div class="card">
+                        <div class="card-header">Players Status</div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Player</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="players-table-body">${playersHtml}</tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card mt-4">
                         <div class="card-header">Score Points</div>
                         <div class="card-body">
                             <table class="table">
@@ -123,5 +174,19 @@ export default async function Dashboard() {
         navigateTo('/chat');
     });
 
+    // Atualizar a lista de jogadores a cada 30 segundos
+    setInterval(() => updatePlayersStatus(element), 30000);
+
     return element;
+}
+
+// Funções de manipulação dos botões de friendship e gameparty
+window.handleFriendship = function(username) {
+    console.log('Friendship with:', username);
+    // Implementar a lógica para a ação de friendship aqui
+}
+
+window.handleGameparty = function(username) {
+    console.log('Gameparty with:', username);
+    // Implementar a lógica para a ação de gameparty aqui
 }
