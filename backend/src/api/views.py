@@ -183,6 +183,21 @@ def player_info(request):
         return JsonResponse({'error': 'Internal Server Error'}, status=500)
 
 @csrf_exempt
+def players_status(request):
+    if request.method == 'GET':
+        players = User.objects.all()
+        players_data = [
+            {
+                'username': player.username,
+                'nickname': player.nickname if player.nickname else player.username,
+                'status_player': player.status_player
+            }
+            for player in players
+        ]
+        return JsonResponse({'status': 'success', 'players': players_data}, status=200)
+    return JsonResponse({'error': 'Método não permitido'}, status=405)
+
+@csrf_exempt
 def update_profile(request):
     logger.info("update_profile")
     if request.method == 'POST':

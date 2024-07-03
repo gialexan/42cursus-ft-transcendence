@@ -8,6 +8,7 @@ urlpatterns = [
     path('validate-oauth-login/', views.validate_oauth_login, name='validate_oauth_login'),
 
     path('player-info/', views.player_info, name='player_info'),
+    path('players-status/', views.players_status, name='players_status'),
     path('update-profile/', views.update_profile, name='update_profile'),
 
     path('player-score/', views.player_score, name='player_score')
