@@ -1,8 +1,8 @@
 from django.urls import path
 from . import views
 from django.urls import path
-from .consumers import GameConsumer
+from .consumers import ChatConsumer
 
 urlpatterns = [
-    path('game/', GameConsumer),
+    path('chat/', ChatConsumer),
 ]

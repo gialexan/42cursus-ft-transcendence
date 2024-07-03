@@ -2,7 +2,7 @@ import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
-class GameConsumer(WebsocketConsumer):
+class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
         self.player_id = self.scope['user'].id if self.scope['user'].is_authenticated else 'anonymous'
@@ -30,26 +30,10 @@ class GameConsumer(WebsocketConsumer):
                     'message': message
                 }
             )
-        elif message_type == 'notification':
-            notification = text_data_json['notification']
-            async_to_sync(self.channel_layer.group_send)(
-                f'player_{self.player_id}',
-                {
-                    'type': 'send_notification',
-                    'notification': notification
-                }
-            )
 
     def chat_message(self, event):
         message = event['message']
         self.send(text_data=json.dumps({
             'type': 'chat_message',
             'message': message
-        }))
-
-    def send_notification(self, event):
-        notification = event['notification']
-        self.send(text_data=json.dumps({
-            'type': 'notification',
-            'notification': notification
         }))

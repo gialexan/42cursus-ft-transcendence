@@ -4,7 +4,8 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from account.models import CustomUser as User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
