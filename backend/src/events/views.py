@@ -1,6 +1,20 @@
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.http import HttpResponse
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json, logging
+from account.views import change_status_player
+
+logger = logging.getLogger(__name__)
+
+def change_status_player_online(player_uuid):
+    change_status_player(player_uuid, True)
+    logger.error(f"Player change status to Online: {player_uuid}")
+
+def change_status_player_offline(player_uuid):
+    change_status_player(player_uuid, False)
+    logger.error(f"Player change status to Offline: {player_uuid}")    
 
 def send_chat_message(player_id, message):
     channel_layer = get_channel_layer()

@@ -14,6 +14,9 @@ import requests
 from jwt import InvalidTokenError
 from jwt import DecodeError
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
@@ -173,7 +176,8 @@ def player_info(request):
             'username': user.username,
             'email': user.email,
             'is_mfa_enabled': user.is_mfa_enabled,
-            'theme': user.theme
+            'theme': user.theme,
+            'user_uuid': user.user_uuid,
         }, status=200)
 
     except User.DoesNotExist:
@@ -181,6 +185,21 @@ def player_info(request):
     except Exception as e:
         logger.error(f'Error fetching player info: {e}')
         return JsonResponse({'error': 'Internal Server Error'}, status=500)
+
+@csrf_exempt
+def players_status(request):
+    if request.method == 'GET':
+        players = User.objects.all()
+        players_data = [
+            {
+                'username': player.username,
+                'nickname': player.nickname if player.nickname else player.username,
+                'status_player': player.status_player
+            }
+            for player in players
+        ]
+        return JsonResponse({'status': 'success', 'players': players_data}, status=200)
+    return JsonResponse({'error': 'Método não permitido'}, status=405)
 
 @csrf_exempt
 def update_profile(request):
@@ -246,3 +265,84 @@ def player_score(request):
         'status': 'success',
         'scores': scores
     }, status=200)
+
+
+@csrf_exempt
+def notifications(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            message = data.get('message')
+            username = data.get('username', None)
+            user_uuid = data.get('user_uuid', None)
+
+            if not message:
+                return JsonResponse({'status': 'error', 'message': 'Message is required'}, status=400)
+
+            channel_layer = get_channel_layer()
+
+            if username:
+                async_to_sync(channel_layer.group_send)(
+                    f'user_{username}',
+                    {
+                        'type': 'send_notification',
+                        'notification': message
+                    }
+                )
+            elif user_uuid:
+                async_to_sync(channel_layer.group_send)(
+                    f'uuid_{user_uuid}',
+                    {
+                        'type': 'send_notification',
+                        'notification': message
+                    }
+                )
+            else:
+                async_to_sync(channel_layer.group_send)(
+                    "all_users",
+                    {
+                        'type': 'send_notification',
+                        'notification': message
+                    }
+                )
+
+            return JsonResponse({'status': 'success', 'message': 'Notification sent successfully'}, status=201)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def example_notification_view(request):
+    player_username = "tonnytg"
+    notification = "Você tem uma nova notificação"
+    
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f'user_{player_username}',
+        {
+            'type': 'send_notification',
+            'notification': notification,
+        }
+    )
+    
+    return HttpResponse("Notificação enviada")
+
+@csrf_exempt
+def send_user_notification(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user_uuid = data.get('user_uuid')
+        message = data.get('message')
+
+        if user_uuid and message:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f'uuid_{user_uuid}',
+                {
+                    'type': 'send_notification',
+                    'notification': message,
+                }
+            )
+            return JsonResponse({'status': 'success', 'message': 'Notification sent successfully.'})
+        return JsonResponse({'status': 'error', 'message': 'Invalid data.'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
