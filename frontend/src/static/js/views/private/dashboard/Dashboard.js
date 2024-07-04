@@ -191,8 +191,6 @@ export default async function Dashboard() {
 async function sendNotificationToEndpoint(userUuid, message) {
     const jwtToken = localStorage.getItem('jwtToken');
 
-    let gameCode = "123456789"
-
     try {
         const response = await fetch('http://localhost/api/notifications/', {
             method: 'POST',
@@ -203,7 +201,7 @@ async function sendNotificationToEndpoint(userUuid, message) {
             body: JSON.stringify({
                 user_uuid: userUuid,
                 message: message,
-                link: "http://localhost:8000/game/join/" + {gameCode}
+                link: "http://localhost:8000/game/join/" + userUuid
             }),
         });
 
