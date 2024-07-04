@@ -177,6 +177,7 @@ def player_info(request):
             'email': user.email,
             'is_mfa_enabled': user.is_mfa_enabled,
             'theme': user.theme,
+            'status_player': user.status_player,
             'user_uuid': user.user_uuid,
         }, status=200)
 
@@ -194,7 +195,8 @@ def players_status(request):
             {
                 'username': player.username,
                 'nickname': player.nickname if player.nickname else player.username,
-                'status_player': player.status_player
+                'status_player': player.status_player,
+                'user_uuid': player.user_uuid
             }
             for player in players
         ]
@@ -266,44 +268,43 @@ def player_score(request):
         'scores': scores
     }, status=200)
 
-
 @csrf_exempt
 def notifications(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
             message = data.get('message')
+            link = data.get('link')
             username = data.get('username', None)
             user_uuid = data.get('user_uuid', None)
 
             if not message:
                 return JsonResponse({'status': 'error', 'message': 'Message is required'}, status=400)
 
+            if not link:
+                return JsonResponse({'status': 'error', 'message': 'Link is required'}, status=400)
+
             channel_layer = get_channel_layer()
+
+            notification_data = {
+                'type': 'send_notification',
+                'notification': {
+                    'message': message,
+                    'link': link
+                }
+            }
 
             if username:
                 async_to_sync(channel_layer.group_send)(
-                    f'user_{username}',
-                    {
-                        'type': 'send_notification',
-                        'notification': message
-                    }
+                    f'user_{username}', notification_data
                 )
             elif user_uuid:
                 async_to_sync(channel_layer.group_send)(
-                    f'uuid_{user_uuid}',
-                    {
-                        'type': 'send_notification',
-                        'notification': message
-                    }
+                    f'uuid_{user_uuid}', notification_data
                 )
             else:
                 async_to_sync(channel_layer.group_send)(
-                    "all_users",
-                    {
-                        'type': 'send_notification',
-                        'notification': message
-                    }
+                    "all_users", notification_data
                 )
 
             return JsonResponse({'status': 'success', 'message': 'Notification sent successfully'}, status=201)
