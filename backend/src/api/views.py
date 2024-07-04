@@ -10,9 +10,10 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import jwt
-import requests
 from jwt import InvalidTokenError
 from jwt import DecodeError
+
+import uuid
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -347,3 +348,11 @@ def send_user_notification(request):
             return JsonResponse({'status': 'success', 'message': 'Notification sent successfully.'})
         return JsonResponse({'status': 'error', 'message': 'Invalid data.'})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+
+@csrf_exempt
+def game_room(request):
+
+    game_room_uuid = str(uuid.uuid4())
+    logger.error(f"game room uuid generate: {game_room_uuid}")
+
+    return JsonResponse({'status': 'success', 'message': game_room_uuid}, status=201)
