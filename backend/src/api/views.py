@@ -10,11 +10,9 @@ from matchmaker.models import GameRoom
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-import jwt
+import jwt, requests
 from jwt import InvalidTokenError
 from jwt import DecodeError
-
-import uuid
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
