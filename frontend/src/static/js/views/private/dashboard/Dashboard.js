@@ -32,16 +32,16 @@ async function updatePlayersStatus(element) {
     // Parte do código onde você gera a lista de jogadores online/offline
     const playersHtml = playersStatus && playersStatus.players
         ? playersStatus.players.map(player => `
-            <tr>
-                <td>${player.nickname || player.username}</td>
-                <td>${player.status_player ? 'Online' : 'Offline'}</td>
-                <td>
-                    <button class="btn ${player.status_player ? 'btn-success' : 'btn-secondary'}" ${player.status_player ? '' : 'disabled'} onclick="handleFriendship('${player.username}')">Friendship</button>
-                    <button class="btn ${player.status_player ? 'btn-success' : 'btn-secondary'}" ${player.status_player ? '' : 'disabled'} onclick="handleGameparty('${player.username}')">Gameparty</button>
-                </td>
-            </tr>
-        `).join('')
-        : '<tr><td colspan="3">No players found</td></tr>';
+        <tr>
+            <td>${player.nickname || player.username}</td>
+            <td>${player.status_player ? 'Online' : 'Offline'}</td>
+            <td>
+                <button class="btn ${player.status_player ? 'btn-success' : 'btn-secondary'}" ${player.status_player ? '' : 'disabled'} onclick="handleFriendship('${player.user_uuid}')">Friendship</button>
+                <button class="btn ${player.status_player ? 'btn-success' : 'btn-secondary'}" ${player.status_player ? '' : 'disabled'} onclick="handleGameparty('${player.user_uuid}')">Gameparty</button>
+            </td>
+        </tr>
+    `).join('')
+    : '<tr><td colspan="3">No players found</td></tr>';
 
     const playersTableBody = element.querySelector('#players-table-body');
     playersTableBody.innerHTML = playersHtml;
@@ -82,8 +82,8 @@ export default async function Dashboard() {
                 <td>${player.nickname || player.username}</td>
                 <td>${player.status_player ? 'Online' : 'Offline'}</td>
                 <td>
-                    <button class="btn ${player.status_player ? 'btn-success' : 'btn-secondary'}" ${player.status_player ? '' : 'disabled'} onclick="handleFriendship('${player.username}')">Friendship</button>
-                    <button class="btn ${player.status_player ? 'btn-success' : 'btn-secondary'}" ${player.status_player ? '' : 'disabled'} onclick="handleGameparty('${player.username}')">Gameparty</button>
+                    <button class="btn ${player.status_player ? 'btn-success' : 'btn-secondary'}" ${player.status_player ? '' : 'disabled'} onclick="handleFriendship('${player.user_uuid}')">Friendship</button>
+                    <button class="btn ${player.status_player ? 'btn-success' : 'btn-secondary'}" ${player.status_player ? '' : 'disabled'} onclick="handleGameparty('${player.user_uuid}')">Gameparty</button>
                 </td>
             </tr>
         `).join('')
@@ -188,13 +188,43 @@ export default async function Dashboard() {
     return element;
 }
 
-// Funções de manipulação dos botões de friendship e gameparty
-window.handleFriendship = function(username) {
-    console.log('Friendship with:', username);
-    // Implementar a lógica para a ação de friendship aqui
+async function sendNotificationToEndpoint(userUuid, message) {
+    const jwtToken = localStorage.getItem('jwtToken');
+
+    let gameCode = "123456789"
+
+    try {
+        const response = await fetch('http://localhost/api/notifications/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwtToken}`,
+            },
+            body: JSON.stringify({
+                user_uuid: userUuid,
+                message: message,
+                link: "http://localhost:8000/game/join/" + {gameCode}
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to send notification');
+        }
+
+        const responseData = await response.json();
+        console.log('Notification sent successfully:', responseData);
+    } catch (error) {
+        console.error('Error sending notification:', error);
+    }
 }
 
-window.handleGameparty = function(username) {
-    console.log('Gameparty with:', username);
-    // Implementar a lógica para a ação de gameparty aqui
+// Funções de manipulação dos botões de friendship e gameparty
+window.handleFriendship = function(userUuid) {
+    console.log('Friendship with:', userUuid);
+    sendNotificationToEndpoint(userUuid, 'Friendship request sent');
+}
+
+window.handleGameparty = function(userUuid) {
+    console.log('Gameparty with:', userUuid);
+    sendNotificationToEndpoint(userUuid, 'Gameparty invitation sent');
 }
