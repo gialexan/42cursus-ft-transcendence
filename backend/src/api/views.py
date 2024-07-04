@@ -354,6 +354,7 @@ def game_room(request):
         try:
             data = json.loads(request.body)
             game_room_description = data.get('game_room_description', '')
+            game_room_type = data.get('game_room_type', 0)
             uuid_player_1 = data.get('uuid_player_1')
             uuid_player_2 = data.get('uuid_player_2', None)
             uuid_player_3 = data.get('uuid_player_3', None)
@@ -364,6 +365,7 @@ def game_room(request):
 
             game_room = GameRoom.objects.create(
                 game_room_description=game_room_description,
+                game_room_type=game_room_type,
                 uuid_player_1=uuid_player_1,
                 uuid_player_2=uuid_player_2,
                 uuid_player_3=uuid_player_3,
