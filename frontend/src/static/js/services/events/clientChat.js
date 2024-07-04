@@ -2,7 +2,7 @@ let socket;
 let isConnected = false;
 
 function connectWebSocketChat() {
-    socket = new WebSocket('ws://localhost:8000/ws/chat/');
+    socket = new WebSocket('ws://localhost/ws/chat/');
 
     socket.onopen = function(e) {
         isConnected = true;
@@ -24,7 +24,7 @@ function connectWebSocketChat() {
         isConnected = false;
         console.log('Connection closed');
         // Attempt to reconnect after a delay
-        setTimeout(connectWebSocket, 5000);
+        setTimeout(connectWebSocketChat, 5000);
     };
 
     socket.onerror = function(error) {
