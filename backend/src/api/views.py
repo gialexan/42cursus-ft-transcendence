@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
 # from django.contrib.auth.models import User
 from account.models import CustomUser as User
+from matchmaker.models import GameRoom
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -351,8 +352,27 @@ def send_user_notification(request):
 
 @csrf_exempt
 def game_room(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            game_room_description = data.get('game_room_description', '')
+            uuid_player_1 = data.get('uuid_player_1')
+            uuid_player_2 = data.get('uuid_player_2', None)
+            uuid_player_3 = data.get('uuid_player_3', None)
+            uuid_player_4 = data.get('uuid_player_4', None)
 
-    game_room_uuid = str(uuid.uuid4())
-    logger.error(f"game room uuid generate: {game_room_uuid}")
+            if not uuid_player_1:
+                return JsonResponse({'status': 'error', 'message': 'uuid_player_1 is required'}, status=400)
 
-    return JsonResponse({'status': 'success', 'message': game_room_uuid}, status=201)
+            game_room = GameRoom.objects.create(
+                game_room_description=game_room_description,
+                uuid_player_1=uuid_player_1,
+                uuid_player_2=uuid_player_2,
+                uuid_player_3=uuid_player_3,
+                uuid_player_4=uuid_player_4,
+            )
+
+            return JsonResponse({'status': 'success', 'game_room_uuid': str(game_room.uuid_game_room)}, status=201)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)    
