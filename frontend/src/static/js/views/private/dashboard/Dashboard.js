@@ -61,10 +61,6 @@ export default async function Dashboard() {
         return null; // Não renderize o dashboard
     }
 
-    if (playerInfo) {
-        connectWebSocketNotify(playerInfo.user_uuid);
-    }    
-
     const playerScore = await fetchApiData('/api/player-score');
     const playersStatus = await fetchApiData('/api/players-status');
 
@@ -186,7 +182,7 @@ export default async function Dashboard() {
 
     // Conectar ao WebSocket de notificação
     if (playerInfo) {
-        connectWebSocketNotify(playerInfo.username, playerInfo.user_uuid);
+        connectWebSocketNotify(playerInfo.user_uuid);
     }
 
     return element;

@@ -27,6 +27,8 @@ class NotificationsConsumer(WebsocketConsumer):
                 f'uuid_{self.player_uuid}',
                 self.channel_name
             )
+            from .views import change_status_player_online
+            change_status_player_online(self.player_uuid)
         except get_user_model().DoesNotExist:
             self.close()
 
@@ -46,7 +48,8 @@ class NotificationsConsumer(WebsocketConsumer):
                 f'uuid_{self.player_uuid}',
                 self.channel_name
             )
-
+        from .views import change_status_player_offline
+        change_status_player_offline(self.player_uuid)
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message_type = text_data_json.get('type')
