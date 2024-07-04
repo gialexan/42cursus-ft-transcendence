@@ -1,26 +1,22 @@
-// static/js/services/events/clientNotification.js
 let socket;
 let isConnected = false;
 
-function connectWebSocketNotify(username, userUuid) {
-    socket = new WebSocket('ws://localhost:8000/ws/notifications/');
+function connectWebSocketNotify(userUuid) {
+    // Inicializa a conexão WebSocket com o servidor
+    console.log("user uuid:", userUuid);
+    socket = new WebSocket(`ws://localhost/ws/notifications/${userUuid}/`);
+
 
     socket.onopen = function(e) {
         isConnected = true;
         console.log('Connection established');
-
-        // Enviar uma mensagem inicial com o username e UUID
-        socket.send(JSON.stringify({
-            'type': 'initialize',
-            'username': username,
-            'user_uuid': userUuid
-        }));
     };
 
     socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
         const messageType = data.type;
 
+        // Verifica o tipo de mensagem recebida
         if (messageType === 'notification') {
             displayNotification(data.notification);
         }
@@ -29,8 +25,8 @@ function connectWebSocketNotify(username, userUuid) {
     socket.onclose = function(event) {
         isConnected = false;
         console.log('Connection closed');
-        // Attempt to reconnect after a delay
-        setTimeout(() => connectWebSocketNotify(username, userUuid), 5000);
+        // Tenta reconectar após um atraso de 5 segundos
+        setTimeout(() => connectWebSocketNotify(userUuid), 5000);
     };
 
     socket.onerror = function(error) {
@@ -39,7 +35,8 @@ function connectWebSocketNotify(username, userUuid) {
 }
 
 function displayNotification(notification) {
-    alert(notification); // Você pode usar outra forma de exibição, como um modal ou um toast
+    // Exibe a notificação recebida (pode ser personalizado)
+    alert(notification);
 }
 
 export { connectWebSocketNotify, displayNotification };

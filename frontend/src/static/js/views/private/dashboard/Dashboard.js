@@ -61,6 +61,10 @@ export default async function Dashboard() {
         return null; // Não renderize o dashboard
     }
 
+    if (playerInfo) {
+        connectWebSocketNotify(playerInfo.user_uuid);
+    }    
+
     const playerScore = await fetchApiData('/api/player-score');
     const playersStatus = await fetchApiData('/api/players-status');
 

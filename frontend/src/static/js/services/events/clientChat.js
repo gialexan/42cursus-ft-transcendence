@@ -2,7 +2,7 @@ let socket;
 let isConnected = false;
 
 function connectWebSocketChat() {
-    socket = new WebSocket('ws://localhost:8000/ws/chat/');
+    socket = new WebSocket('ws://localhost/ws/chat/');
 
     socket.onopen = function(e) {
         isConnected = true;

@@ -1,6 +1,9 @@
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.http import HttpResponse
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 def send_chat_message(player_id, message):
     channel_layer = get_channel_layer()

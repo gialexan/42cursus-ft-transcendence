@@ -326,3 +326,23 @@ def example_notification_view(request):
     )
     
     return HttpResponse("Notificação enviada")
+
+@csrf_exempt
+def send_user_notification(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user_uuid = data.get('user_uuid')
+        message = data.get('message')
+
+        if user_uuid and message:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f'uuid_{user_uuid}',
+                {
+                    'type': 'send_notification',
+                    'notification': message,
+                }
+            )
+            return JsonResponse({'status': 'success', 'message': 'Notification sent successfully.'})
+        return JsonResponse({'status': 'error', 'message': 'Invalid data.'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
