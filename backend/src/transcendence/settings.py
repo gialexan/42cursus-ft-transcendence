@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'channels',
     'events',
     'authentication',
+    'matchmaker',
 ]
 
 ASGI_APPLICATION = 'transcendence.asgi.application'

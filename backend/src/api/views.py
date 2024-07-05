@@ -6,11 +6,11 @@ from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
 # from django.contrib.auth.models import User
 from account.models import CustomUser as User
+from matchmaker.models import GameRoom
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-import jwt
-import requests
+import jwt, requests
 from jwt import InvalidTokenError
 from jwt import DecodeError
 
@@ -268,6 +268,40 @@ def player_score(request):
         'scores': scores
     }, status=200)
 
+def send_notification(message, link, username=None, user_uuid=None):
+    try:
+        if not message:
+            raise ValueError('Message is required')
+
+        if not link:
+            raise ValueError('Link is required')
+
+        channel_layer = get_channel_layer()
+
+        notification_data = {
+            'type': 'send_notification',
+            'notification': {
+                'message': message,
+                'link': link
+            }
+        }
+
+        if username:
+            async_to_sync(channel_layer.group_send)(
+                f'user_{username}', notification_data
+            )
+        elif user_uuid:
+            async_to_sync(channel_layer.group_send)(
+                f'uuid_{user_uuid}', notification_data
+            )
+        else:
+            async_to_sync(channel_layer.group_send)(
+                "all_users", notification_data
+            )
+    except Exception as e:
+        # Log the exception or handle it as needed
+        print(f'Error sending notification: {e}')
+
 @csrf_exempt
 def notifications(request):
     if request.method == 'POST':
@@ -278,39 +312,56 @@ def notifications(request):
             username = data.get('username', None)
             user_uuid = data.get('user_uuid', None)
 
-            if not message:
-                return JsonResponse({'status': 'error', 'message': 'Message is required'}, status=400)
-
-            if not link:
-                return JsonResponse({'status': 'error', 'message': 'Link is required'}, status=400)
-
-            channel_layer = get_channel_layer()
-
-            notification_data = {
-                'type': 'send_notification',
-                'notification': {
-                    'message': message,
-                    'link': link
-                }
-            }
-
-            if username:
-                async_to_sync(channel_layer.group_send)(
-                    f'user_{username}', notification_data
-                )
-            elif user_uuid:
-                async_to_sync(channel_layer.group_send)(
-                    f'uuid_{user_uuid}', notification_data
-                )
-            else:
-                async_to_sync(channel_layer.group_send)(
-                    "all_users", notification_data
-                )
+            send_notification(message, link, username, user_uuid)
 
             return JsonResponse({'status': 'success', 'message': 'Notification sent successfully'}, status=201)
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+# @csrf_exempt
+# def notifications(request):
+#     if request.method == 'POST':
+#         try:
+#             data = json.loads(request.body)
+#             message = data.get('message')
+#             link = data.get('link')
+#             username = data.get('username', None)
+#             user_uuid = data.get('user_uuid', None)
+
+#             if not message:
+#                 return JsonResponse({'status': 'error', 'message': 'Message is required'}, status=400)
+
+#             if not link:
+#                 return JsonResponse({'status': 'error', 'message': 'Link is required'}, status=400)
+
+#             channel_layer = get_channel_layer()
+
+#             notification_data = {
+#                 'type': 'send_notification',
+#                 'notification': {
+#                     'message': message,
+#                     'link': link
+#                 }
+#             }
+
+#             if username:
+#                 async_to_sync(channel_layer.group_send)(
+#                     f'user_{username}', notification_data
+#                 )
+#             elif user_uuid:
+#                 async_to_sync(channel_layer.group_send)(
+#                     f'uuid_{user_uuid}', notification_data
+#                 )
+#             else:
+#                 async_to_sync(channel_layer.group_send)(
+#                     "all_users", notification_data
+#                 )
+
+#             return JsonResponse({'status': 'success', 'message': 'Notification sent successfully'}, status=201)
+#         except Exception as e:
+#             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+#     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
 @csrf_exempt
 def example_notification_view(request):
@@ -347,3 +398,79 @@ def send_user_notification(request):
             return JsonResponse({'status': 'success', 'message': 'Notification sent successfully.'})
         return JsonResponse({'status': 'error', 'message': 'Invalid data.'})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+
+@csrf_exempt
+def game_room(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            game_room_description = data.get('game_room_description', '')
+            game_room_type = data.get('game_room_type', 0)
+            uuid_player_1 = data.get('uuid_player_1')
+            uuid_player_2 = data.get('uuid_player_2', None)
+            uuid_player_3 = data.get('uuid_player_3', None)
+            uuid_player_4 = data.get('uuid_player_4', None)
+
+            if not uuid_player_1:
+                return JsonResponse({'status': 'error', 'message': 'uuid_player_1 is required'}, status=400)
+
+            game_room = GameRoom.objects.create(
+                game_room_description=game_room_description,
+                game_room_type=game_room_type,
+                uuid_player_1=uuid_player_1,
+                uuid_player_2=uuid_player_2,
+                uuid_player_3=uuid_player_3,
+                uuid_player_4=uuid_player_4,
+            )
+
+            message = "Invite to game"
+            link = f"http://localhost/game-room?uuid={game_room.uuid_game_room}"
+
+            player_uuids = [uuid_player_1, uuid_player_2, uuid_player_3, uuid_player_4]
+            for player_uuid in player_uuids:
+                if player_uuid:
+                    send_notification(message, link, user_uuid=player_uuid)
+
+            return JsonResponse({'status': 'success', 'game_room_uuid': str(game_room.uuid_game_room)}, status=201)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)   
+
+
+@csrf_exempt
+def game_room_info(request):
+    logger.info("game room info")
+    
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JsonResponse({'error': 'Token not provided'}, status=400)
+
+    token = auth_header.split(' ')[1]
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+    except DecodeError:
+        return JsonResponse({'error': 'Invalid token'}, status=401)
+
+    game_uuid = request.GET.get('game_uuid')
+    if not game_uuid:
+        return JsonResponse({'error': 'Game UUID not provided'}, status=400)
+
+    try:
+        game_room = GameRoom.objects.get(uuid_game_room=game_uuid)
+        game_room_data = {
+            'game_room_description': game_room.game_room_description,
+            'game_room_type': game_room.game_room_type,
+            'game_room_status': game_room.game_room_status,
+            'uuid_player_1': game_room.uuid_player_1,
+            'uuid_player_2': game_room.uuid_player_2,
+            'uuid_player_3': game_room.uuid_player_3,
+            'uuid_player_4': game_room.uuid_player_4,
+            'score_player_1': game_room.score_player_1,
+            'score_player_2': game_room.score_player_2,
+            'score_player_3': game_room.score_player_3,
+            'score_player_4': game_room.score_player_4,
+        }
+
+        return JsonResponse({'status': 'success', 'game_room': game_room_data}, status=200)
+    except GameRoom.DoesNotExist:
+        return JsonResponse({'error': 'Game room not found'}, status=404)
