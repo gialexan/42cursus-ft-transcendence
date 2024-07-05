@@ -268,6 +268,40 @@ def player_score(request):
         'scores': scores
     }, status=200)
 
+def send_notification(message, link, username=None, user_uuid=None):
+    try:
+        if not message:
+            raise ValueError('Message is required')
+
+        if not link:
+            raise ValueError('Link is required')
+
+        channel_layer = get_channel_layer()
+
+        notification_data = {
+            'type': 'send_notification',
+            'notification': {
+                'message': message,
+                'link': link
+            }
+        }
+
+        if username:
+            async_to_sync(channel_layer.group_send)(
+                f'user_{username}', notification_data
+            )
+        elif user_uuid:
+            async_to_sync(channel_layer.group_send)(
+                f'uuid_{user_uuid}', notification_data
+            )
+        else:
+            async_to_sync(channel_layer.group_send)(
+                "all_users", notification_data
+            )
+    except Exception as e:
+        # Log the exception or handle it as needed
+        print(f'Error sending notification: {e}')
+
 @csrf_exempt
 def notifications(request):
     if request.method == 'POST':
@@ -278,39 +312,56 @@ def notifications(request):
             username = data.get('username', None)
             user_uuid = data.get('user_uuid', None)
 
-            if not message:
-                return JsonResponse({'status': 'error', 'message': 'Message is required'}, status=400)
-
-            if not link:
-                return JsonResponse({'status': 'error', 'message': 'Link is required'}, status=400)
-
-            channel_layer = get_channel_layer()
-
-            notification_data = {
-                'type': 'send_notification',
-                'notification': {
-                    'message': message,
-                    'link': link
-                }
-            }
-
-            if username:
-                async_to_sync(channel_layer.group_send)(
-                    f'user_{username}', notification_data
-                )
-            elif user_uuid:
-                async_to_sync(channel_layer.group_send)(
-                    f'uuid_{user_uuid}', notification_data
-                )
-            else:
-                async_to_sync(channel_layer.group_send)(
-                    "all_users", notification_data
-                )
+            send_notification(message, link, username, user_uuid)
 
             return JsonResponse({'status': 'success', 'message': 'Notification sent successfully'}, status=201)
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+# @csrf_exempt
+# def notifications(request):
+#     if request.method == 'POST':
+#         try:
+#             data = json.loads(request.body)
+#             message = data.get('message')
+#             link = data.get('link')
+#             username = data.get('username', None)
+#             user_uuid = data.get('user_uuid', None)
+
+#             if not message:
+#                 return JsonResponse({'status': 'error', 'message': 'Message is required'}, status=400)
+
+#             if not link:
+#                 return JsonResponse({'status': 'error', 'message': 'Link is required'}, status=400)
+
+#             channel_layer = get_channel_layer()
+
+#             notification_data = {
+#                 'type': 'send_notification',
+#                 'notification': {
+#                     'message': message,
+#                     'link': link
+#                 }
+#             }
+
+#             if username:
+#                 async_to_sync(channel_layer.group_send)(
+#                     f'user_{username}', notification_data
+#                 )
+#             elif user_uuid:
+#                 async_to_sync(channel_layer.group_send)(
+#                     f'uuid_{user_uuid}', notification_data
+#                 )
+#             else:
+#                 async_to_sync(channel_layer.group_send)(
+#                     "all_users", notification_data
+#                 )
+
+#             return JsonResponse({'status': 'success', 'message': 'Notification sent successfully'}, status=201)
+#         except Exception as e:
+#             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+#     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
 @csrf_exempt
 def example_notification_view(request):
@@ -372,7 +423,15 @@ def game_room(request):
                 uuid_player_4=uuid_player_4,
             )
 
+            message = "Invite to game"
+            link = f"http://localhost/game-room?uuid={game_room.uuid_game_room}"
+
+            player_uuids = [uuid_player_1, uuid_player_2, uuid_player_3, uuid_player_4]
+            for player_uuid in player_uuids:
+                if player_uuid:
+                    send_notification(message, link, user_uuid=player_uuid)
+
             return JsonResponse({'status': 'success', 'game_room_uuid': str(game_room.uuid_game_room)}, status=201)
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)    
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)   

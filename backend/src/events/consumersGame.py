@@ -1,58 +1,55 @@
 import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
-from django.contrib.auth import get_user_model
 import logging
 
 logger = logging.getLogger(__name__)
 
 class GameConsumer(WebsocketConsumer):
     def connect(self):
-        self.accept()
         self.game_uuid = self.scope['url_route']['kwargs']['game_uuid']
-        try:
-            async_to_sync(self.channel_layer.group_add)(
-                f'uuid_{self.game_uuid}',
-                self.channel_name
-            )
-        except get_user_model().DoesNotExist:
-            self.close()
+        self.accept()
+        async_to_sync(self.channel_layer.group_add)(
+            f'game_{self.game_uuid}',
+            self.channel_name
+        )
+        logger.info(f"Connected to game room: {self.game_uuid}")
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(
-            f'uuid_{self.game_uuid}',
+            f'game_{self.game_uuid}',
             self.channel_name
         )
+        logger.info(f"Disconnected from game room: {self.game_uuid}")
 
     def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message_type = text_data_json.get('type')
+        data = json.loads(text_data)
+        logger.error(f"Data Received: {data}")
+        if data['type'] == 'key_press':
+            try:
+                response = {
+                    'type': 'key_press',
+                    'player_uuid': data['player_uuid'],
+                    'key': data['key'],
+                    'message': f"Key {data['key']} pressed by {data['player_uuid']}"
+                }
+                logger.error(f"Key press received: {data}")
 
-        if message_type == 'notification':
-            notification = text_data_json.get('notification')
-            target_username = text_data_json.get('username', None)
-            target_uuid = text_data_json.get('user_uuid', None)
-
-            if target_username:
                 async_to_sync(self.channel_layer.group_send)(
-                    f'user_{target_username}',
+                    f'game_{self.game_uuid}',
                     {
-                        'type': 'send_notification',
-                        'notification': notification
-                    }
-                )
-            elif target_uuid:
-                async_to_sync(self.channel_layer.group_send)(
-                    f'uuid_{target_uuid}',
-                    {
-                        'type': 'send_notification',
-                        'notification': notification
+                        'type': 'game_position',
+                        'response': response
                     }
                 )
 
-    def send_notification(self, event):
-        notification = event['notification']
+            except KeyError as e:
+                logger.error(f"KeyError: {str(e)}")
+
+    def game_position(self, event):
+        response = event['response']
         self.send(text_data=json.dumps({
-            'type': 'notification',
-            'notification': notification
+            'type': 'game_report',
+            'message': "oi",
+            'response': response
         }))
