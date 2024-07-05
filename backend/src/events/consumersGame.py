@@ -1,3 +1,4 @@
+# consumerGame.py
 import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
@@ -30,8 +31,7 @@ class GameConsumer(WebsocketConsumer):
                 response = {
                     'type': 'key_press',
                     'player_uuid': data['player_uuid'],
-                    'key': data['key'],
-                    'message': f"Key {data['key']} pressed by {data['player_uuid']}"
+                    'key': data['key']
                 }
                 logger.error(f"Key press received: {data}")
 
@@ -50,6 +50,5 @@ class GameConsumer(WebsocketConsumer):
         response = event['response']
         self.send(text_data=json.dumps({
             'type': 'game_report',
-            'message': "oi",
             'response': response
         }))

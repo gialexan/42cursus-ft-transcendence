@@ -435,3 +435,42 @@ def game_room(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)   
+
+
+@csrf_exempt
+def game_room_info(request):
+    logger.info("game room info")
+    
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JsonResponse({'error': 'Token not provided'}, status=400)
+
+    token = auth_header.split(' ')[1]
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+    except DecodeError:
+        return JsonResponse({'error': 'Invalid token'}, status=401)
+
+    game_uuid = request.GET.get('game_uuid')
+    if not game_uuid:
+        return JsonResponse({'error': 'Game UUID not provided'}, status=400)
+
+    try:
+        game_room = GameRoom.objects.get(uuid_game_room=game_uuid)
+        game_room_data = {
+            'game_room_description': game_room.game_room_description,
+            'game_room_type': game_room.game_room_type,
+            'game_room_status': game_room.game_room_status,
+            'uuid_player_1': game_room.uuid_player_1,
+            'uuid_player_2': game_room.uuid_player_2,
+            'uuid_player_3': game_room.uuid_player_3,
+            'uuid_player_4': game_room.uuid_player_4,
+            'score_player_1': game_room.score_player_1,
+            'score_player_2': game_room.score_player_2,
+            'score_player_3': game_room.score_player_3,
+            'score_player_4': game_room.score_player_4,
+        }
+
+        return JsonResponse({'status': 'success', 'game_room': game_room_data}, status=200)
+    except GameRoom.DoesNotExist:
+        return JsonResponse({'error': 'Game room not found'}, status=404)
