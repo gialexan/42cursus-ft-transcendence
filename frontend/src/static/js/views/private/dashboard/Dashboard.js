@@ -83,7 +83,7 @@ export default async function Dashboard() {
                 <td>${player.status_player ? 'Online' : 'Offline'}</td>
                 <td>
                     <button class="btn ${player.status_player ? 'btn-success' : 'btn-secondary'}" ${player.status_player ? '' : 'disabled'} onclick="handleFriendship('${player.user_uuid}')">Friendship</button>
-                    <button class="btn ${player.status_player ? 'btn-success' : 'btn-secondary'}" ${player.status_player ? '' : 'disabled'} onclick="handleGameparty('${player.user_uuid}')">Gameparty</button>
+                    <button class="btn ${player.status_player ? 'btn-success' : 'btn-secondary'}" ${player.status_player ? '' : 'disabled'} onclick="handleGameparty('${player.user_uuid}', 2)">Gameparty</button>
                 </td>
             </tr>
         `).join('')
@@ -115,15 +115,15 @@ export default async function Dashboard() {
                         <div class="card-header">Modos de jogar</div>
                         <div class="card-body">
                             <p>Está pronto para se divertir? No modo Han Solo, você encara a clássica batalha de Pong sozinho, onde a rapidez e a precisão são suas melhores aliadas. Ou, se prefere um desafio mais intenso, enfrente a Skynet e teste suas habilidades contra a IA. Prove que os humanos ainda são superiores e que as máquinas não podem nos dominar... ainda!</p>
-                            <button type="button" class="btn btn-primary">Han Solo</button>
-                            <button type="button" class="btn btn-secondary" onclick="window.location.href='/pong'">Contra a Skynet</button>
+                            <button type="button" class="btn btn-primary" onclick="handleGameMode(0)">Han Solo</button>
+                            <button type="button" class="btn btn-secondary" onclick="handleGameMode(1)">Contra a Skynet</button>
                         </div>
                     </div>
                     <div class="card mt-4">
                         <div class="card-header">Torneio online e Chat</div>
                         <div class="card-body">
                             <p>Desafie seus amigos em um torneio online e mostre quem é o melhor. Mostre suas habilidades e seja o primeiro do ranking.</p>
-                            <button type="button" class="btn btn-primary">Torneio online</button>
+                            <button type="button" class="btn btn-primary" onclick="handleGameMode(3)">Torneio online</button>
                             <button type="button" class="btn btn-primary" id="openChat">Chat</button>
                         </div>
                     </div>
@@ -231,6 +231,22 @@ window.handleGameparty = async function(userUuid) {
         return;
     }
 
+    createGameRoom(playerInfo.user_uuid, userUuid, 2); // 2 para PVP 2 jogadores
+}
+
+window.handleGameMode = async function(gameRoomType) {
+    console.log('Starting game mode:', gameRoomType);
+    
+    const playerInfo = await fetchApiData('/api/player-info');
+    if (!playerInfo || !playerInfo.user_uuid) {
+        console.error('Failed to get player info.');
+        return;
+    }
+
+    createGameRoom(playerInfo.user_uuid, null, gameRoomType);
+}
+
+async function createGameRoom(uuid_player_1, uuid_player_2, game_room_type) {
     const jwtToken = localStorage.getItem('jwtToken');
 
     try {
@@ -242,9 +258,9 @@ window.handleGameparty = async function(userUuid) {
             },
             body: JSON.stringify({
                 game_room_description: "Test Game Room",
-                game_room_type: 0,
-                uuid_player_1: playerInfo.user_uuid,
-                uuid_player_2: userUuid
+                game_room_type: game_room_type,
+                uuid_player_1: uuid_player_1,
+                uuid_player_2: uuid_player_2
             }),
         });
 
