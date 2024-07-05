@@ -222,7 +222,39 @@ window.handleFriendship = function(userUuid) {
     sendNotificationToEndpoint(userUuid, 'Friendship request sent');
 }
 
-window.handleGameparty = function(userUuid) {
+window.handleGameparty = async function(userUuid) {
     console.log('Gameparty with:', userUuid);
-    sendNotificationToEndpoint(userUuid, 'Gameparty invitation sent');
+    
+    const playerInfo = await fetchApiData('/api/player-info');
+    if (!playerInfo || !playerInfo.user_uuid) {
+        console.error('Failed to get player info.');
+        return;
+    }
+
+    const jwtToken = localStorage.getItem('jwtToken');
+
+    try {
+        const response = await fetch('http://localhost:8000/api/game-room/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwtToken}`,
+            },
+            body: JSON.stringify({
+                game_room_description: "Test Game Room",
+                game_room_type: 0,
+                uuid_player_1: playerInfo.user_uuid,
+                uuid_player_2: userUuid
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to create game room');
+        }
+
+        const responseData = await response.json();
+        console.log('Game room created successfully:', responseData);
+    } catch (error) {
+        console.error('Error creating game room:', error);
+    }
 }
