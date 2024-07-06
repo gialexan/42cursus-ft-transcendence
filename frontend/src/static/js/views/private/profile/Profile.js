@@ -1,5 +1,4 @@
-// view/profile.js
-// import { fetchApiData } from '/static/js/services/fetchData.js';
+import { navigateTo } from '/static/js/Router.js';
 
 async function fetchApiLocal(url) {
     const jwtToken = localStorage.getItem('jwtToken');
@@ -75,6 +74,7 @@ export default async function Profile() {
                         </div>
                         <button type="submit" class="btn btn-primary">Save</button>
                     </form>
+                    <button class="btn btn-secondary mt-3" id="backToDashboard">Back to Dashboard</button>
                 `;
 
                 element.innerHTML = profileForm;
@@ -123,6 +123,12 @@ export default async function Profile() {
 
             renderProfileForm(); // Chamar a função para renderizar o formulário
         }
+
+        const backToDashboardButton = element.querySelector('#backToDashboard');
+        backToDashboardButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            navigateTo('/dashboard');
+        });
 
         return element;
     } catch (error) {
