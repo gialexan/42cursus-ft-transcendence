@@ -1,4 +1,5 @@
 import { connectWebSocketChat, sendChatMessage } from '/static/js/services/events/clientChat.js';
+import { navigateTo } from '/static/js/Router.js';
 
 async function fetchData(url, jwtToken) {
     try {
@@ -49,6 +50,7 @@ export default function Chat() {
                                 <input type="text" id="chatInput" class="form-control" placeholder="Type a message">
                                 <button class="btn btn-primary" id="sendButton">Send</button>
                             </div>
+                            <button class="btn btn-secondary mt-3" id="backToDashboard">Back to Dashboard</button>
                         </div>
                     </div>
                 </div>
@@ -73,9 +75,15 @@ export default function Chat() {
         const message = userName + ":" + chatInput.value.trim();
         if (message) {
             sendChatMessage(message);
-            // appendMessage(`You: ${message}`);
             chatInput.value = '';
         }
+    });
+
+    // Event listener for back to dashboard button
+    const backToDashboardButton = element.querySelector('#backToDashboard');
+    backToDashboardButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        navigateTo('/dashboard');
     });
 
     // Function to handle incoming messages
