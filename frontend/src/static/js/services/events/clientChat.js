@@ -1,8 +1,8 @@
 let socket;
 let isConnected = false;
 
-function connectWebSocketChat() {
-    socket = new WebSocket('ws://localhost/ws/chat/');
+function connectWebSocketChat(uuid) {
+    socket = new WebSocket(`ws://localhost/ws/chat/${uuid}/`);
 
     socket.onopen = function(e) {
         isConnected = true;
@@ -13,19 +13,17 @@ function connectWebSocketChat() {
         const data = JSON.parse(event.data);
         const messageType = data.type;
 
-        if (messageType === 'notification') {
-            displayNotification(data.notification);
-        } else if (messageType === 'chat_message') {
+        if (messageType === 'chat_message') {
             displayChatMessage(data.message);
         }
     };
 
-    socket.onclose = function(event) {
-        isConnected = false;
-        console.log('Connection closed');
-        // Attempt to reconnect after a delay
-        setTimeout(connectWebSocketChat, 5000);
-    };
+    // socket.onclose = function(event) {
+    //     isConnected = false;
+    //     console.log('Connection closed');
+    //     // Attempt to reconnect after a delay
+    //     setTimeout(() => connectWebSocketChat(uuid), 5000);
+    // };
 
     socket.onerror = function(error) {
         console.error(`WebSocket error: ${error.message}`);
@@ -51,7 +49,12 @@ function displayChatMessage(message) {
     }
 }
 
-// Inicializar a conexão WebSocket
-// connectWebSocketChat();
+function disconnectWebSocketChat() {
+    if (socket) {
+        socket.close();
+        socket = null;
+        console.log("WebSocket disconnected");
+    }
+}
 
-export { connectWebSocketChat, sendChatMessage };
+export { connectWebSocketChat, sendChatMessage, disconnectWebSocketChat };

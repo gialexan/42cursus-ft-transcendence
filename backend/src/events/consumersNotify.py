@@ -29,6 +29,7 @@ class NotificationsConsumer(WebsocketConsumer):
             )
             from .views import change_status_player_online
             change_status_player_online(self.player_uuid)
+            logger.info(f'Player {user.user_uuid} connected in WebSocket Notify')
         except get_user_model().DoesNotExist:
             self.close()
 
@@ -50,6 +51,8 @@ class NotificationsConsumer(WebsocketConsumer):
             )
         from .views import change_status_player_offline
         change_status_player_offline(self.player_uuid)
+
+        logger.info(f'Player {self.player_uuid} disconnected in WebSocket Notify')
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message_type = text_data_json.get('type')

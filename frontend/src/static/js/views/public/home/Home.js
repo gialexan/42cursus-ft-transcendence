@@ -39,7 +39,7 @@ export default function Home() {
         const password = formData.get('password');
 
         try {
-            const response = await fetch('/api/login-form/', {
+            const response = await fetch('http://localhost/api/login-form/', {
                 method: 'POST',
                 body: formData,
             });

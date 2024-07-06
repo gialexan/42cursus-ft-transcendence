@@ -1,4 +1,4 @@
-import { connectWebSocketChat, sendChatMessage } from '/static/js/services/events/clientChat.js';
+import { connectWebSocketChat, sendChatMessage, disconnectWebSocketChat } from '/static/js/services/events/clientChat.js';
 import { navigateTo } from '/static/js/Router.js';
 
 async function fetchData(url, jwtToken) {
@@ -24,16 +24,19 @@ async function fetchData(url, jwtToken) {
 export default function Chat() {
     const element = document.createElement('div');
     let userName = "anonymous";
+    let userUuid = null;
 
     const jwtToken = localStorage.getItem('jwtToken');
     const url = '/api/player-info/';
     fetchData(url, jwtToken)
     .then(data => {
-        userName = data["nickname"] ? data["nickname"] : data["username"]
+        userName = data["nickname"] ? data["nickname"] : data["username"];
+        userUuid = data["user_uuid"];
+        connectWebSocketChat(userUuid);  // Conectar o WebSocket com o UUID do usuário
     })
     .catch(error => {
         console.error('Error fetching data:', error);
-        userName = "anonymous"
+        userName = "anonymous";
     });
 
     element.innerHTML = `
@@ -82,6 +85,7 @@ export default function Chat() {
     // Event listener for back to dashboard button
     const backToDashboardButton = element.querySelector('#backToDashboard');
     backToDashboardButton.addEventListener('click', (event) => {
+        disconnectWebSocketChat();
         event.preventDefault();
         navigateTo('/dashboard');
     });
@@ -90,8 +94,6 @@ export default function Chat() {
     window.displayChatMessage = (message) => {
         appendMessage(message);
     };
-
-    connectWebSocketChat();
 
     return element;
 }
