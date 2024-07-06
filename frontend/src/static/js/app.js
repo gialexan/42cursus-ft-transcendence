@@ -1,4 +1,4 @@
-import { Router } from '/static/js/Router.js';
+import { Router, navigateTo } from '/static/js/Router.js';
 import { handleCallback } from './services/callbackHandler.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -11,5 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
             Router();
             window.addEventListener('popstate', Router);
         }
+    }
+});
+
+document.body.addEventListener('click', (e) => {
+    if (e.target.matches('[data-link]')) {
+        e.preventDefault();
+        navigateTo(e.target.href);
     }
 });
