@@ -56,7 +56,7 @@ export default function Home() {
     });
 
     const handleButtonLogin = () => {
-        const authUrl = `https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-949c9204ce2bacc41d9143cdcb52e5152e57d57686ef9cad4cfbe996f15a106e&redirect_uri=http%3A%2F%2Flocalhost%3A80%2Fcallback&response_type=code`;
+        const authUrl = `https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-949c9204ce2bacc41d9143cdcb52e5152e57d57686ef9cad4cfbe996f15a106e&redirect_uri=https%3A%2F%2Flocalhost%2Fcallback&response_type=code`;
         window.location.href = authUrl;
     };
 
