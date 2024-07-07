@@ -8,17 +8,19 @@ export default function PongPvP2Players() {
                             <div class="navbar navbar-expand-lg navbar-light bg-light">
                                 <div class="container-fluid">
                                     <img class="px-3" src="/static/images/logo-mini.svg" alt="Logo">
-                                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                                        <li class="nav-item">
-                                            <button type="button" class="btn btn-link nav-link" onclick="navigateToProfile()">Profile</button>
-                                        </li>
-                                        <li class="nav-item">
-                                            <button type="button" class="btn btn-link nav-link" onclick="navigateTo('/dashboard')">Dashboard</button>
-                                        </li>
-                                        <li class="nav-item">
-                                            <button type="button" class="btn btn-link nav-link" onclick="logout()">Logout</button>
-                                        </li>
-                                    </ul>
+                                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                                        <span class="navbar-toggler-icon"></span>
+                                    </button>
+                                    <div class="collapse navbar-collapse" id="navbarNav">
+                                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                                            <li class="nav-item">
+                                                <button type="button" class="btn btn-link nav-link" onclick="navigateToProfile()">Profile</button>
+                                            </li>
+                                            <li class="nav-item">
+                                                <button class="btn btn-link nav-link" id="backToDashboard">Dashboard</button>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                             <div class="container mt-3">
