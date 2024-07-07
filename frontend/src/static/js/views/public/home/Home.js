@@ -7,8 +7,7 @@ export default function Home() {
             <div class="card col-2-md w-100">
                 <div class="row border-rounded justify-content-center m-5 w-50 mx-auto">
                     <div class="card-body justify-content-center align-items-center">
-                        <img class="mx-auto d-block" src="static/images/logo-m.png" alt="">
-                        <h2 class="card-title text-center" alt="The ultimate arcade Pong">The ultimate arcade PONG</h2>
+                        <img class="mx-auto d-block mb-4" src="static/images/logo.svg" alt="">
                         <form id="loginForm">
                             <div class="mb-3">
                                 <label for="username">Username</label>
@@ -20,7 +19,7 @@ export default function Home() {
                             </div>
                             <div class="mb-4 d-grid">
                                 <button type="submit" class="btn btn-dark btn-block"><i class="fas fa-sign-in-alt"></i> Sign In</button>
-                                <button id="signUpButton" type="button" class="btn btn-outline-dark btn-block mt-3">Sign Up</button>
+                                <button id="signUpButton" type="button" class="btn btn-outline-dark btn-block mt-3"><i class="fas fa-id-card"></i> Sign Up</button>
                                 <p class="text-center fs-5">or</p>
                                 <button id="loginButton" type="button" class="btn btn-dark btn-block"><i class="fa fa-duotone fa-rocket"></i> Login 42</button>
                             </div>

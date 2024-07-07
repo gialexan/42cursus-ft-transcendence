@@ -1,5 +1,6 @@
 import { navigateTo } from '/static/js/Router.js';
 
+
 async function fetchApiLocal(url) {
     const jwtToken = localStorage.getItem('jwtToken');
 
@@ -30,7 +31,7 @@ export default async function Profile() {
     try {
         // Função para buscar informações do usuário na API
         const userInfo = await fetchApiLocal('/api/player-info');
-        
+
         // Elemento principal que será retornado
         const element = document.createElement('div');
 
@@ -48,33 +49,49 @@ export default async function Profile() {
             const renderProfileForm = () => {
                 // Formulário para editar informações do perfil
                 const profileForm = `
-                    <form id="profileForm">
-                        <div class="mb-3">
-                            <label for="nickname" class="form-label">Nickname</label>
-                            <input type="text" class="form-control" id="nickname" value="${userInfo.nickname}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" value="${userInfo.username}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="text" class="form-control" id="email" value="${userInfo.email}" required>
-                        </div>            
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="isMFAEnabled" ${userInfo.is_mfa_enabled ? 'checked' : ''}>
-                            <label class="form-check-label" for="isMFAEnabled">Multi-Factor Authentication Enabled</label>
-                        </div>
-                        <div class="mb-3">
-                            <label for="theme" class="form-label">Theme</label>
-                            <select class="form-select" id="theme" required>
-                                <option value="light" ${userInfo.theme === 'light' ? 'selected' : ''}>Light</option>
-                                <option value="dark" ${userInfo.theme === 'dark' ? 'selected' : ''}>Dark</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </form>
-                    <button class="btn btn-secondary mt-3" id="backToDashboard">Back to Dashboard</button>
+                            <!-- Navigation bar | Web component -->
+                            <div class="navbar navbar-expand-lg navbar-light bg-light">
+                                <div class="container-fluid">
+                                    <img class="px-3" src="/static/images/logo-mini.svg" alt="Logo">
+                                    <span class="navbar-brand mb-0 h1">${userInfo ? `Olá, ${userInfo.nickname}` : 'Welcome'}</span>
+                                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                                        <span class="navbar-toggler-icon"></span>
+                                    </button>
+                                    <div class="collapse navbar-collapse" id="navbarNav">
+                                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                                            <li class="nav-item">
+                                                <button class="btn btn-link nav-link" id="backToDashboard">Painel</button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                <div class="container mt-3">
+                    <div class="row justify-content-between">
+                    <div class="card p-3">
+                        <div class="card-header">Editar perfil</div>
+                        <form id="profileForm">
+                            <div class="mb-3">
+                                <label for="nickname" class="form-label">Apelido</label>
+                                <input type="text" class="form-control" id="nickname" value="${userInfo.nickname}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" value="${userInfo.username}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="text" class="form-control" id="email" value="${userInfo.email}" required>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="isMFAEnabled" ${userInfo.is_mfa_enabled ? 'checked' : ''}>
+                                <label class="form-check-label" for="isMFAEnabled">Multi-Factor Authentication Enabled</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+                    </div>
+                </div>
+
                 `;
 
                 element.innerHTML = profileForm;
@@ -126,7 +143,6 @@ export default async function Profile() {
 
         const backToDashboardButton = element.querySelector('#backToDashboard');
         backToDashboardButton.addEventListener('click', (event) => {
-            event.preventDefault();
             navigateTo('/dashboard');
         });
 

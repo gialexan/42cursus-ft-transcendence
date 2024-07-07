@@ -97,10 +97,11 @@ export default async function Dashboard() {
         <!-- Navigation bar | Web component -->
         <div class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
-                <span class="navbar-brand mb-0 h1">${playerInfo ? `Welcome, ${playerInfo.nickname}` : 'Welcome'}</span>
+                <img class="px-3" src="/static/images/logo-mini.svg" alt="Logo">
+                <span class="navbar-brand mb-0 h1">${playerInfo ? `Olá, ${playerInfo.nickname}` : 'Welcome'}</span>
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <button type="button" class="btn btn-link nav-link" onclick="navigateToProfile()">Profile</button>
+                        <button type="button" class="btn btn-link nav-link" onclick="navigateToProfile()">Perfil</button>
                     </li>
                 </ul>
             </div>
@@ -112,19 +113,21 @@ export default async function Dashboard() {
                 <!-- Left column for Games -->
                 <div class="col-md-6">
                     <div class="card">
-                        <div class="card-header">Modos de jogar</div>
-                        <div class="card-body">
+                        <div class="card-header">Modos Offline</div>
+                        <div class="card-body d-grid">
                             <p>Está pronto para se divertir? No modo Han Solo, você encara a clássica batalha de Pong sozinho, onde a rapidez e a precisão são suas melhores aliadas. Ou, se prefere um desafio mais intenso, enfrente a Skynet e teste suas habilidades contra a IA. Prove que os humanos ainda são superiores e que as máquinas não podem nos dominar... ainda!</p>
-                            <button type="button" class="btn btn-primary" onclick="handleGameMode(0)">Han Solo</button>
-                            <button type="button" class="btn btn-secondary" onclick="handleGameMode(1)">Contra a Skynet</button>
+                            <button type="button" class="btn btn-primary m-1" onclick="handleGameMode(0)">Han Solo</button>
+                            <button type="button" class="btn btn-primary m-1" onclick="handleGameMode(1)">Contra a Skynet</button>
+                            <button type="button" class="btn btn-primary m-1" onclick="handleGameMode(2)">PvP Local 2 Players</button>
+                            <button type="button" class="btn btn-primary m-1" onclick="handleGameMode(3)">PvP Local 4 Players</button>
                         </div>
                     </div>
                     <div class="card mt-4">
                         <div class="card-header">Torneio online e Chat</div>
-                        <div class="card-body">
+                        <div class="card-body d-grid">
                             <p>Desafie seus amigos em um torneio online e mostre quem é o melhor. Mostre suas habilidades e seja o primeiro do ranking.</p>
-                            <button type="button" class="btn btn-primary" onclick="handleGameMode(3)">Torneio online</button>
-                            <button type="button" class="btn btn-primary" id="openChat">Chat</button>
+                            <button type="button" class="btn btn-primary m-1" id="openChat">Chat</button>
+                            <button type="button" class="btn btn-primary m-1" onclick="handleGameMode(3)">Torneio online</button>
                         </div>
                     </div>
                 </div>
@@ -132,14 +135,14 @@ export default async function Dashboard() {
                 <!-- Right column for Players Status and Scoreboard -->
                 <div class="col-md-6">
                     <div class="card">
-                        <div class="card-header">Players Status</div>
+                        <div class="card-header">Estatus dos jogadores</div>
                         <div class="card-body">
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Player</th>
+                                        <th scope="col">Jogador</th>
                                         <th scope="col">Status</th>
-                                        <th scope="col">Actions</th>
+                                        <th scope="col">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody id="players-table-body">${playersHtml}</tbody>
@@ -147,7 +150,7 @@ export default async function Dashboard() {
                         </div>
                     </div>
                     <div class="card mt-4">
-                        <div class="card-header">Score Points</div>
+                        <div class="card-header">Pontos</div>
                         <div class="card-body">
                             <table class="table">
                                 <thead>
@@ -224,7 +227,7 @@ window.handleFriendship = function(userUuid) {
 
 window.handleGameparty = async function(userUuid) {
     console.log('Gameparty with:', userUuid);
-    
+
     const playerInfo = await fetchApiData('/api/player-info');
     if (!playerInfo || !playerInfo.user_uuid) {
         console.error('Failed to get player info.');
@@ -235,15 +238,30 @@ window.handleGameparty = async function(userUuid) {
 }
 
 window.handleGameMode = async function(gameRoomType) {
-    console.log('Starting game mode:', gameRoomType);
-    
+
+    if (gameRoomType == 0) {
+        console.log('Starting game mode:', gameRoomType);
+        navigateTo("http://localhost/pong");
+        return
+    } else if (gameRoomType == 1) {
+        console.log('Starting game mode:', gameRoomType);
+        navigateTo("http://localhost/pong-ai");
+    } else if (gameRoomType == 2) {
+        console.log('Starting game mode:', gameRoomType);
+        navigateTo("http://localhost/pong-pvp2");
+    } else if (gameRoomType == 3) {
+        console.log('Starting game mode:', gameRoomType);
+        navigateTo("http://localhost/pong-pvp4");
+    }
+
+
     const playerInfo = await fetchApiData('/api/player-info');
     if (!playerInfo || !playerInfo.user_uuid) {
         console.error('Failed to get player info.');
         return;
     }
 
-    createGameRoom(playerInfo.user_uuid, null, gameRoomType);
+    // createGameRoom(playerInfo.user_uuid, null, gameRoomType);
 }
 
 async function createGameRoom(uuid_player_1, uuid_player_2, game_room_type) {
