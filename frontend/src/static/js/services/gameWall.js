@@ -20,8 +20,8 @@ const SETTINGS = {
     BALL_COLOR: 'white',
     BALL_RADIUS: 10,
     INITIAL_BALL_SPEED: 3,
-    MAX_BALL_SPEED: 10,
-    BALL_SPEED_INCREASE: 0.05,
+    MAX_BALL_SPEED: 5,
+    BALL_SPEED_INCREASE: 0.00,
     PLAYER_SPEED: 10,
     GAME_MODE: GAME_MODE.TRAINING, // 'single' or 'local'
     AI_DIFFICULTY: 'medium', // 'easy', 'medium', 'hard', 'legend'
@@ -467,7 +467,7 @@ class Game {
 
     start() {
         // Increase speed every second
-        setInterval(() => this._increaseBallSpeed(), SETTINGS.COUNTDOWN_INTzERVAL);
+        setInterval(() => this._increaseBallSpeed(), SETTINGS.COUNTDOWN_INTERVAL);
         this._startCountdown();
         
         // Add touch controls only if on a mobile device
@@ -563,7 +563,6 @@ class Game {
     }
 
     _gameLoop() {
-        console.log("Game looping")
         if (this.isGameRunning) {
             this._update();
             this.render.drawGame(
@@ -676,14 +675,12 @@ class Game {
 }
 
 function main() {
-    console.log("Startando a main", new Date().toISOString())
     // Initialize canvas, i.e., 2D pong table's width and height
     const canvas = document.getElementById('gameCanvas');
     canvas.width = SETTINGS.CANVAS_WIDTH;
     canvas.height = SETTINGS.CANVAS_HEIGHT;
 
     const game = new Game(canvas);
-    console.log("Criado um novo jogo", new Date().toISOString());
 
     // Start the game
     game.start();
