@@ -20,7 +20,7 @@ export default function Home() {
                             </div>
                             <div class="mb-4 d-grid">
                                 <button type="submit" class="btn btn-dark btn-block"><i class="fas fa-sign-in-alt"></i> Sign In</button>
-                                <button id="signUpButton" type="button" class="btn btn-outline-dark btn-block mt-3">Sign Up</button>
+                                <button id="signUpButton" type="button" class="btn btn-outline-dark btn-block mt-3"><i class="fas fa-id-card"></i> Sign Up</button>
                                 <p class="text-center fs-5">or</p>
                                 <button id="loginButton" type="button" class="btn btn-dark btn-block"><i class="fa fa-duotone fa-rocket"></i> Login 42</button>
                             </div>
