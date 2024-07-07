@@ -163,7 +163,6 @@ def player_info(request):
             'username': user.username,
             'email': user.email,
             'is_mfa_enabled': user.is_mfa_enabled,
-            'theme': user.theme,
             'status_player': user.status_player,
             'user_uuid': user.user_uuid,
         }, status=200)
@@ -214,7 +213,6 @@ def update_profile(request):
         try:
             user = User.objects.get(username=payload['username'])
             user.nickname = data['nickname']
-            user.theme = data['theme']
             user.is_mfa_enabled = bool(data['is_mfa_enabled'])
 
             user.save()

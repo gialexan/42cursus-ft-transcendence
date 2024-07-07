@@ -4,7 +4,7 @@ let isConnected = false;
 function connectWebSocketNotify(userUuid) {
     // Inicializa a conexão WebSocket com o servidor
     console.log("user uuid:", userUuid);
-    socket = new WebSocket(`ws://localhost/ws/notifications/${userUuid}/`);
+    socket = new WebSocket(`wss://localhost/ws/notifications/${userUuid}/`);
 
     socket.onopen = function(e) {
         isConnected = true;

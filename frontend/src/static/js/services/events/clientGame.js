@@ -2,7 +2,7 @@
 let socket = null;
 
 export function connectWebSocketGame(gameUuid) {
-    socket = new WebSocket(`ws://localhost/ws/game/${gameUuid}/`);
+    socket = new WebSocket(`wss://localhost/ws/game/${gameUuid}/`);
 
     socket.onopen = function() {
         console.log('Connected to game room:', gameUuid);
