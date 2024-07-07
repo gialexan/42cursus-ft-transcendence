@@ -11,11 +11,11 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 # Verificar configurações de email
-logger.info(f"EMAIL_BACKEND: {settings.EMAIL_BACKEND}")
-logger.info(f"EMAIL_HOST: {settings.EMAIL_HOST}")
-logger.info(f"EMAIL_PORT: {settings.EMAIL_PORT}")
-logger.info(f"EMAIL_USE_TLS: {settings.EMAIL_USE_TLS}")
-logger.info(f"EMAIL_HOST_USER: {settings.EMAIL_HOST_USER}")
+logger.debug(f"EMAIL_BACKEND: {settings.EMAIL_BACKEND}")
+logger.debug(f"EMAIL_HOST: {settings.EMAIL_HOST}")
+logger.debug(f"EMAIL_PORT: {settings.EMAIL_PORT}")
+logger.debug(f"EMAIL_USE_TLS: {settings.EMAIL_USE_TLS}")
+logger.debug(f"EMAIL_HOST_USER: {settings.EMAIL_HOST_USER}")
 
 @csrf_exempt
 def create_mfa(request):

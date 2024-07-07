@@ -1,4 +1,5 @@
-import { connectWebSocketChat, sendChatMessage } from '/static/js/services/events/clientChat.js';
+import { connectWebSocketChat, sendChatMessage, disconnectWebSocketChat } from '/static/js/services/events/clientChat.js';
+import { navigateTo } from '/static/js/Router.js';
 
 async function fetchData(url, jwtToken) {
     try {
@@ -23,16 +24,19 @@ async function fetchData(url, jwtToken) {
 export default function Chat() {
     const element = document.createElement('div');
     let userName = "anonymous";
+    let userUuid = null;
 
     const jwtToken = localStorage.getItem('jwtToken');
     const url = '/api/player-info/';
     fetchData(url, jwtToken)
     .then(data => {
-        userName = data["nickname"] ? data["nickname"] : data["username"]
+        userName = data["nickname"] ? data["nickname"] : data["username"];
+        userUuid = data["user_uuid"];
+        connectWebSocketChat(userUuid);  // Conectar o WebSocket com o UUID do usuário
     })
     .catch(error => {
         console.error('Error fetching data:', error);
-        userName = "anonymous"
+        userName = "anonymous";
     });
 
     element.innerHTML = `
@@ -49,6 +53,7 @@ export default function Chat() {
                                 <input type="text" id="chatInput" class="form-control" placeholder="Type a message">
                                 <button class="btn btn-primary" id="sendButton">Send</button>
                             </div>
+                            <button class="btn btn-secondary mt-3" id="backToDashboard">Back to Dashboard</button>
                         </div>
                     </div>
                 </div>
@@ -73,17 +78,22 @@ export default function Chat() {
         const message = userName + ":" + chatInput.value.trim();
         if (message) {
             sendChatMessage(message);
-            // appendMessage(`You: ${message}`);
             chatInput.value = '';
         }
+    });
+
+    // Event listener for back to dashboard button
+    const backToDashboardButton = element.querySelector('#backToDashboard');
+    backToDashboardButton.addEventListener('click', (event) => {
+        disconnectWebSocketChat();
+        event.preventDefault();
+        navigateTo('/dashboard');
     });
 
     // Function to handle incoming messages
     window.displayChatMessage = (message) => {
         appendMessage(message);
     };
-
-    connectWebSocketChat();
 
     return element;
 }

@@ -37,7 +37,6 @@ def generate_jwt_token(user):
 
 @require_http_methods(["GET"])
 def validate_jwt(request):
-    logger.info("validate_jwt")
     auth_header = request.headers.get('Authorization')
     if not auth_header or not auth_header.startswith('Bearer '):
         return JsonResponse({'error': 'Token não fornecido'}, status=400)
@@ -52,7 +51,6 @@ def validate_jwt(request):
 
 @csrf_exempt
 def login_form(request):
-    logger.info("login_form")
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -66,6 +64,7 @@ def login_form(request):
                 'status': 'success',
                 'message': 'Credenciais válidas'
             }, status=200)
+        logger.info(f'Error in validate login form: {username}')
         return JsonResponse({'status': 'error', 'message': 'Credenciais inválidas'}, status=401)
     return JsonResponse({'error': 'Método não permitido'}, status=405)
 
@@ -140,7 +139,6 @@ def validate_oauth_login(request):
 
 @csrf_exempt
 def player_info(request):
-    logger.info("player_info")
     auth_header = request.headers.get('Authorization')
     if not auth_header or not auth_header.startswith('Bearer '):
         return JsonResponse({'error': 'Token not provided'}, status=400)
@@ -159,17 +157,6 @@ def player_info(request):
         
         user = User.objects.get(id=user_id)
 
-        print(f"Dados do usuário (id={user.id}):")
-        for field in user._meta.get_fields():
-            try:
-                value = getattr(user, field.name)
-                print(f"{field.name}: {value}")
-                logger.error(f"{field.name}: {value}")
-            except AttributeError:
-                # Tratar campos que não são atributos do modelo (como relacionamentos)
-                pass
-
-        logger.error(f'Error User: {user}')
         return JsonResponse({
             'status': 'success',
             'nickname': user.nickname,
@@ -243,7 +230,6 @@ def update_profile(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def player_score(request):
-    logger.info("player_score")
     auth_header = request.headers.get('Authorization')
     if not auth_header or not auth_header.startswith('Bearer '):
         return JsonResponse({'error': 'Token not provided'}, status=400)
@@ -253,8 +239,6 @@ def player_score(request):
         payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
     except DecodeError:
         return JsonResponse({'error': 'Invalid token'}, status=401)
-
-    logger.info("success:", payload)
 
     # Mock scores data
     scores = [

@@ -9,6 +9,6 @@ def change_status_player(player_uuid, status):
         user = User.objects.get(user_uuid=player_uuid)
         user.status_player = status
         user.save()
-        logger.info(f"Changed status_player for {user.username} to {status}")
+        logger.info(f'Player {user.user_uuid} {user.username} change status to {status}')
     except User.DoesNotExist:
         logger.info(f"User with UUID {player_uuid} does not exist")
