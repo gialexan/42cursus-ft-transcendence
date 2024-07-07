@@ -52,14 +52,30 @@ services:
     ports:
       - "5432:5432"
 
-  frontend:
-    image: nginx:1.27.0-alpine
-    container_name: nginx
+  vault:
+    image: hashicorp/vault:latest
     ports:
-      - "80:80"
+      - "8201:8201"
+    environment:
+      VAULT_ADDR: 'http://0.0.0.0:8201'
+      VAULT_LOCAL_CONFIG: '{"listener": [{"tcp":{"address": "0.0.0.0:8201","tls_disable":"true"}}], "default_lease_ttl": "168h", "max_lease_ttl": "720h", "ui": true}'
+      VAULT_DEV_ROOT_TOKEN_ID: '00000000-0000-0000-0000-000000000000'
+      VAULT_TOKEN: '00000000-0000-0000-0000-000000000000'
+    cap_add:
+      - IPC_LOCK
     volumes:
-      - ./frontend/src:/usr/share/nginx/html:ro
-      - ./frontend/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - vault-volume:/data
+    command: server -dev -dev-root-token-id="00000000-0000-0000-0000-000000000000"
+
+  reverseproxy:
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    ports:
+      - '443:443'
+    environment:
+      - PROXY=1
+    restart: always
     depends_on:
       - backend
 
@@ -93,5 +109,6 @@ services:
 
 volumes:
   postgres_data:
+  vault-volume:
   prometheus-data:
   grafana-data:
