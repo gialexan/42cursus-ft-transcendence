@@ -1,4 +1,5 @@
 import { main as gameMain } from '/static/js/services/gameVsAI.js';
+import { navigateTo } from '/static/js/Router.js';
 
 export default function PongVsAI() {
     const element = document.createElement('div');
@@ -65,14 +66,13 @@ export default function PongVsAI() {
 
     const backToDashboardButton = element.querySelector('#backToDashboard');
     backToDashboardButton.addEventListener('click', (event) => {
-        disconnectWebSocketChat();
-        event.preventDefault();
         navigateTo('/dashboard');
     });
 
     window.navigateToProfile = function() {
         navigateTo('/profile');
     };
+
 
     return element;
 }

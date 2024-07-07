@@ -1,5 +1,6 @@
 import { navigateTo } from '/static/js/Router.js';
 
+
 async function fetchApiLocal(url) {
     const jwtToken = localStorage.getItem('jwtToken');
 
@@ -86,13 +87,6 @@ export default async function Profile() {
                                 <input type="checkbox" class="form-check-input" id="isMFAEnabled" ${userInfo.is_mfa_enabled ? 'checked' : ''}>
                                 <label class="form-check-label" for="isMFAEnabled">Multi-Factor Authentication Enabled</label>
                             </div>
-                            <!--<div class="mb-3">
-                                <label for="theme" class="form-label">Theme</label>
-                                <select class="form-select" id="theme" required>
-                                    <option value="light" ${userInfo.theme === 'light' ? 'selected' : ''}>Light</option>
-                                    <option value="dark" ${userInfo.theme === 'dark' ? 'selected' : ''}>Dark</option>
-                                </select>
-                            </div> -->
                             <button type="submit" class="btn btn-primary">Save</button>
                         </form>
                     </div>
@@ -149,8 +143,6 @@ export default async function Profile() {
 
         const backToDashboardButton = element.querySelector('#backToDashboard');
         backToDashboardButton.addEventListener('click', (event) => {
-            disconnectWebSocketChat();
-            event.preventDefault();
             navigateTo('/dashboard');
         });
 

@@ -1,4 +1,5 @@
 import { main as gameMain } from '/static/js/services/gamePvP2Players.js';
+import { navigateTo } from '/static/js/Router.js';
 
 export default function PongPvP2Players() {
     const element = document.createElement('div');
@@ -64,14 +65,13 @@ export default function PongPvP2Players() {
 
     const backToDashboardButton = element.querySelector('#backToDashboard');
     backToDashboardButton.addEventListener('click', (event) => {
-        disconnectWebSocketChat();
-        event.preventDefault();
         navigateTo('/dashboard');
     });
 
     window.navigateToProfile = function() {
         navigateTo('/profile');
     };
+
 
     return element;
 }
