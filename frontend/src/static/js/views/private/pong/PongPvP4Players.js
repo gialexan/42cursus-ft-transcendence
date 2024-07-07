@@ -11,7 +11,7 @@ export default function PongPvP4Players() {
             <div class="row justify-content-center w-100">
                 <div class="col-12">
                     <div class="border border-3 border-black p-2 d-flex justify-content-center">
-                        <canvas id="gameCanvas" class="w-100" width="800" height="600"></canvas>
+                        <canvas id="gameCanvas" class="w-100" width="800" height="800"></canvas>
                     </div>
                     <div class="d-flex justify-content-center mt-3">
                         <button id="startButton" class="btn btn-primary">Start</button>
