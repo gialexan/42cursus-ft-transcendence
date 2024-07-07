@@ -114,20 +114,20 @@ export default async function Dashboard() {
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-header">Modos Offline</div>
-                        <div class="card-body">
+                        <div class="card-body d-grid">
                             <p>Está pronto para se divertir? No modo Han Solo, você encara a clássica batalha de Pong sozinho, onde a rapidez e a precisão são suas melhores aliadas. Ou, se prefere um desafio mais intenso, enfrente a Skynet e teste suas habilidades contra a IA. Prove que os humanos ainda são superiores e que as máquinas não podem nos dominar... ainda!</p>
-                            <button type="button" class="btn btn-primary" onclick="handleGameMode(0)">Han Solo</button>
-                            <button type="button" class="btn btn-secondary" onclick="handleGameMode(1)">Contra a Skynet</button>
-                            <button type="button" class="btn btn-secondary" onclick="handleGameMode(2)">PvP Local 2 Players</button>
-                            <button type="button" class="btn btn-secondary" onclick="handleGameMode(3)">PvP Local 4 Players</button>
+                            <button type="button" class="btn btn-primary m-1" onclick="handleGameMode(0)">Han Solo</button>
+                            <button type="button" class="btn btn-primary m-1" onclick="handleGameMode(1)">Contra a Skynet</button>
+                            <button type="button" class="btn btn-primary m-1" onclick="handleGameMode(2)">PvP Local 2 Players</button>
+                            <button type="button" class="btn btn-primary m-1" onclick="handleGameMode(3)">PvP Local 4 Players</button>
                         </div>
                     </div>
                     <div class="card mt-4">
                         <div class="card-header">Torneio online e Chat</div>
-                        <div class="card-body">
+                        <div class="card-body d-grid">
                             <p>Desafie seus amigos em um torneio online e mostre quem é o melhor. Mostre suas habilidades e seja o primeiro do ranking.</p>
-                            <button type="button" class="btn btn-primary" onclick="handleGameMode(3)">Torneio online</button>
-                            <button type="button" class="btn btn-primary" id="openChat">Chat</button>
+                            <button type="button" class="btn btn-primary m-1" id="openChat">Chat</button>
+                            <button type="button" class="btn btn-primary m-1" onclick="handleGameMode(3)">Torneio online</button>
                         </div>
                     </div>
                 </div>
