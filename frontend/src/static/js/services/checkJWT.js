@@ -5,7 +5,7 @@ export async function checkJWT() {
 
     if (!jwtToken) {
         console.log("No JWT token found, redirecting to login...");
-        window.location.href = 'http://localhost'; // Ajuste a URL conforme necessário
+        window.location.href = 'https://localhost'; // Ajuste a URL conforme necessário
         return false;
     }
 
@@ -21,14 +21,14 @@ export async function checkJWT() {
         } else {
             console.log("Invalid JWT token, clearing token and redirecting to login...");
             localStorage.removeItem('jwtToken');
-            window.location.href = 'http://localhost'; // Ajuste a URL conforme necessário
+            window.location.href = 'https://localhost'; // Ajuste a URL conforme necessário
             return false;
         }
     } catch (error) {
         console.error('Erro ao verificar JWT:', error);
         // Lógica para lidar com erros, como redirecionar para a tela de login
         localStorage.removeItem('jwtToken');
-        window.location.href = 'http://localhost'; // Ajuste a URL conforme necessário
+        window.location.href = 'https://localhost'; // Ajuste a URL conforme necessário
         return false;
     }
 }
