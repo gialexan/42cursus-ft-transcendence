@@ -13,6 +13,9 @@ export default function PongWall() {
                     <div class="border border-3 border-black p-2 d-flex justify-content-center">
                         <canvas id="gameCanvas" class="w-100" width="800" height="600"></canvas>
                     </div>
+                    <div class="d-flex justify-content-center mt-3">
+                        <button id="startButton" class="btn btn-primary">Start</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -29,7 +32,7 @@ export default function PongWall() {
                         Player 1 wins!
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">End game</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="endGameButton">End game</button>
                         <button type="button" class="btn btn-info" data-bs-dismiss="modal" id="restartGameButton">Restart game</button>
                     </div>
                 </div>
@@ -38,7 +41,9 @@ export default function PongWall() {
     `;
 
     element.addEventListener('DOMNodeInserted', () => {
-        gameMain();
+        document.getElementById('startButton').addEventListener('click', () => {
+            gameMain();
+        });
     });
 
     return element;

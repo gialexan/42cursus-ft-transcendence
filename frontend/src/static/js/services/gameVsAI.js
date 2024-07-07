@@ -1,3 +1,5 @@
+import { navigateTo } from '/static/js/Router.js';
+
 // Game settings and configurations
 const GAME_FONT = "SANS";
 
@@ -502,6 +504,24 @@ class Game {
 
         this.isGameRunning = false;
         this.isGamePaused = true;
+
+        // Adiciona event listeners para os botões do modal
+        document.getElementById('endGameButton').addEventListener('click', () => {
+            this._handleEndGame();
+        });
+
+        document.getElementById('restartGameButton').addEventListener('click', () => {
+            console.log("restartGameButton - restartando o jogo")
+        });
+
+    }
+
+    _handleEndGame() {
+        // Lógica para finalizar o jogo
+        console.log('Game ended 1');
+        navigateTo("/dashboard");
+
+        // Outras ações necessárias para finalizar o jogo
     }
 
     /**

@@ -1,3 +1,5 @@
+import { navigateTo } from '/static/js/Router.js';
+
 // Game settings and configurations
 const GAME_FONT = "SANS";
 
@@ -21,7 +23,7 @@ const SETTINGS = {
     MAX_BALL_SPEED: 10,
     BALL_SPEED_INCREASE: 0.05,
     PLAYER_SPEED: 10,
-    GAME_MODE: GAME_MODE.SOLO_PLAYER, // 'single' or 'local'
+    GAME_MODE: GAME_MODE.LOCAL_PVP, // 'single' or 'local'
     AI_DIFFICULTY: 'medium', // 'easy', 'medium', 'hard', 'legend'
     AI_TIME_STEPS: 0.01667, // Considering 60 fps
     WINNING_SCORE: 3, // Define winning score
@@ -502,6 +504,24 @@ class Game {
 
         this.isGameRunning = false;
         this.isGamePaused = true;
+
+        // Adiciona event listeners para os botões do modal
+        document.getElementById('endGameButton').addEventListener('click', () => {
+            this._handleEndGame();
+        });
+
+        document.getElementById('restartGameButton').addEventListener('click', () => {
+            console.log("restartGameButton - restartando o jogo")
+        });
+
+    }
+
+    _handleEndGame() {
+        // Lógica para finalizar o jogo
+        console.log('Game ended 1');
+        navigateTo("/dashboard");
+
+        // Outras ações necessárias para finalizar o jogo
     }
 
     /**
