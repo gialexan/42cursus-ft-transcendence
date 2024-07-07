@@ -40,26 +40,45 @@ export default function Chat() {
     });
 
     element.innerHTML = `
-        <div class="container mt-3">
-            <div class="row">
-                <div class="col-md-8 offset-md-2">
-                    <div class="card">
-                        <div class="card-header">Chat</div>
-                        <div class="card-body">
-                            <div id="chatMessages" class="mb-3" style="height: 300px; overflow-y: scroll;">
-                                <!-- Chat messages will be appended here -->
+                            <!-- Navigation bar | Web component -->
+                            <div class="navbar navbar-expand-lg navbar-light bg-light">
+                                <div class="container-fluid">
+                                    <img class="px-3" src="/static/images/logo-mini.svg" alt="Logo">
+                                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                                        <span class="navbar-toggler-icon"></span>
+                                    </button>
+                                    <div class="collapse navbar-collapse" id="navbarNav">
+                                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                                            <li class="nav-item">
+                                                <button type="button" class="btn btn-link nav-link" onclick="navigateToProfile()">Perfil</button>
+                                            </li>
+                                            <li class="nav-item">
+                                                <button class="btn btn-link nav-link" id="backToDashboard">Painel</button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="input-group">
-                                <input type="text" id="chatInput" class="form-control" placeholder="Type a message">
-                                <button class="btn btn-primary" id="sendButton">Send</button>
+                            <div class="container mt-3">
+                                <div class="row">
+                                    <div class="col-md-8 offset-md-2">
+                                        <div class="card">
+                                            <div class="card-header">Chat</div>
+                                            <div class="card-body">
+                                                <div id="chatMessages" class="mb-3" style="height: 300px; overflow-y: scroll;">
+                                                    <!-- Chat messages will be appended here -->
+                                                </div>
+                                                <div class="input-group">
+                                                    <input type="text" id="chatInput" class="form-control" placeholder="Type a message">
+                                                    <button class="btn btn-primary" id="sendButton">Send</button>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <button class="btn btn-secondary mt-3" id="backToDashboard">Back to Dashboard</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
+                        `;
 
     const chatMessages = element.querySelector('#chatMessages');
     const chatInput = element.querySelector('#chatInput');
@@ -89,6 +108,10 @@ export default function Chat() {
         event.preventDefault();
         navigateTo('/dashboard');
     });
+
+    window.navigateToProfile = function() {
+        navigateTo('/profile');
+    };
 
     // Function to handle incoming messages
     window.displayChatMessage = (message) => {
