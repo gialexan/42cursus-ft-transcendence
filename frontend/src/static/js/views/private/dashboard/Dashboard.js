@@ -127,7 +127,7 @@ export default async function Dashboard() {
                         <div class="card-body d-grid">
                             <p>Desafie seus amigos em um torneio online e mostre quem é o melhor. Mostre suas habilidades e seja o primeiro do ranking.</p>
                             <button type="button" class="btn btn-primary m-1" id="openChat">Chat</button>
-                            <button type="button" class="btn btn-primary m-1" onclick="handleGameMode(3)">Torneio online</button>
+                            <button type="button" disabled class="btn btn-primary m-1" onclick="handleGameMode(3)">Torneio online</button>
                         </div>
                     </div>
                 </div>
@@ -222,7 +222,7 @@ async function sendNotificationToEndpoint(userUuid, message) {
 // Funções de manipulação dos botões de friendship e gameparty
 window.handleFriendship = function(userUuid) {
     console.log('Friendship with:', userUuid);
-    sendNotificationToEndpoint(userUuid, 'Friendship request sent');
+    // sendNotificationToEndpoint(userUuid, 'Friendship request sent');
 }
 
 window.handleGameparty = async function(userUuid) {
@@ -234,7 +234,8 @@ window.handleGameparty = async function(userUuid) {
         return;
     }
 
-    createGameRoom(playerInfo.user_uuid, userUuid, 2); // 2 para PVP 2 jogadores
+    // createGameRoom(playerInfo.user_uuid, userUuid, 2); // 2 para PVP 2 jogadores
+    console.log('GameParty with:', userUuid);
 }
 
 window.handleGameMode = async function(gameRoomType) {
