@@ -97,6 +97,7 @@ export default async function Dashboard() {
         <!-- Navigation bar | Web component -->
         <div class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
+                <img class="px-3" src="/static/images/logo-mini.svg" alt="Logo">
                 <span class="navbar-brand mb-0 h1">${playerInfo ? `Welcome, ${playerInfo.nickname}` : 'Welcome'}</span>
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
@@ -226,7 +227,7 @@ window.handleFriendship = function(userUuid) {
 
 window.handleGameparty = async function(userUuid) {
     console.log('Gameparty with:', userUuid);
-    
+
     const playerInfo = await fetchApiData('/api/player-info');
     if (!playerInfo || !playerInfo.user_uuid) {
         console.error('Failed to get player info.');
