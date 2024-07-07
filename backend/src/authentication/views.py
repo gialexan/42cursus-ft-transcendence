@@ -1,3 +1,4 @@
+import json
 from django.http import JsonResponse
 from django.core.mail import send_mail
 from .models import MFA
@@ -20,7 +21,10 @@ logger.debug(f"EMAIL_HOST_USER: {settings.EMAIL_HOST_USER}")
 @csrf_exempt
 def create_mfa(request):
     try:
-        user = User.objects.get(username="antthoma")
+        data = json.loads(request.body)
+        username = data.get('username')
+
+        user = User.objects.get(username=username)
         logger.error(f"user: {user.username}")
 
         characters = string.ascii_uppercase + string.digits
@@ -55,10 +59,11 @@ def validate_mfa(request):
             import json
             data = json.loads(request.body)
             mfa_code = data.get('mfa_code')
+            username = data.get('username')
 
             logger.error(f"MFA Token: {mfa_code}")
 
-            user = User.objects.get(username="antthoma")
+            user = User.objects.get(username=username)
             logger.error(f"user: {user.username}")            
 
             mfa = MFA.get_latest_mfa(user.id)

@@ -2,7 +2,7 @@ let socket;
 let isConnected = false;
 
 function connectWebSocketChat(uuid) {
-    socket = new WebSocket(`ws://localhost/ws/chat/${uuid}/`);
+    socket = new WebSocket(`wss://localhost/ws/chat/${uuid}/`);
 
     socket.onopen = function(e) {
         isConnected = true;

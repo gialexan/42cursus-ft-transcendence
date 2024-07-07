@@ -20,7 +20,7 @@ async function fetchApiLocal(url) {
     } catch (error) {
         console.error('Error fetching data:', error);
         localStorage.removeItem('jwtToken'); // Remove JWT if there's an API error
-        window.location.href = 'http://localhost'; // Redirect to the login page
+        window.location.href = 'https://localhost'; // Redirect to the login page
         return null;
     }
 }
@@ -30,7 +30,7 @@ export default async function Profile() {
 
     try {
         // Função para buscar informações do usuário na API
-        const userInfo = await fetchApiLocal('/api/player-info');
+        const userInfo = await fetchApiLocal('https://localhost/api/player-info');
 
         // Elemento principal que será retornado
         const element = document.createElement('div');
@@ -106,11 +106,10 @@ export default async function Profile() {
                         username: document.getElementById('username').value,
                         email: document.getElementById('email').value,
                         is_mfa_enabled: document.getElementById('isMFAEnabled').checked,
-                        theme: document.getElementById('theme').value,
                     };
 
                     try {
-                        const response = await fetch('/api/update-profile/', {
+                        const response = await fetch('http://localhost:8000/api/update-profile/', {
                             method: 'POST',
                             headers: {
                                 'Authorization': `Bearer ${jwtToken}`,
