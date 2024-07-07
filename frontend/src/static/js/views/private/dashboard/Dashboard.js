@@ -21,7 +21,7 @@ async function fetchApiData(url) {
     } catch (error) {
         console.error('Error fetching data:', error);
         localStorage.removeItem('jwtToken'); // Remove JWT if there's an API error
-        window.location.href = 'http://localhost'; // Redirect to the login page
+        window.location.href = 'https://localhost'; // Redirect to the login page
         return null;
     }
 }
@@ -41,7 +41,7 @@ async function updatePlayersStatus(element) {
             </td>
         </tr>
     `).join('')
-    : '<tr><td colspan="3">No players found</td></tr>';
+        : '<tr><td colspan="3">No players found</td></tr>';
 
     const playersTableBody = element.querySelector('#players-table-body');
     playersTableBody.innerHTML = playersHtml;
@@ -195,7 +195,7 @@ async function sendNotificationToEndpoint(userUuid, message) {
     const jwtToken = localStorage.getItem('jwtToken');
 
     try {
-        const response = await fetch('http://localhost/api/notifications/', {
+        const response = await fetch('https://localhost/api/notifications/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -204,7 +204,7 @@ async function sendNotificationToEndpoint(userUuid, message) {
             body: JSON.stringify({
                 user_uuid: userUuid,
                 message: message,
-                link: "http://localhost:8000/game/join/" + userUuid
+                link: "https://localhost:8000/game/join/" + userUuid
             }),
         });
 
@@ -241,17 +241,17 @@ window.handleGameMode = async function(gameRoomType) {
 
     if (gameRoomType == 0) {
         console.log('Starting game mode:', gameRoomType);
-        navigateTo("http://localhost/pong");
+        navigateTo("https://localhost/pong");
         return
     } else if (gameRoomType == 1) {
         console.log('Starting game mode:', gameRoomType);
-        navigateTo("http://localhost/pong-ai");
+        navigateTo("https://localhost/pong-ai");
     } else if (gameRoomType == 2) {
         console.log('Starting game mode:', gameRoomType);
-        navigateTo("http://localhost/pong-pvp2");
+        navigateTo("https://localhost/pong-pvp2");
     } else if (gameRoomType == 3) {
         console.log('Starting game mode:', gameRoomType);
-        navigateTo("http://localhost/pong-pvp4");
+        navigateTo("https://localhost/pong-pvp4");
     }
 
 
@@ -268,7 +268,7 @@ async function createGameRoom(uuid_player_1, uuid_player_2, game_room_type) {
     const jwtToken = localStorage.getItem('jwtToken');
 
     try {
-        const response = await fetch('http://localhost:8000/api/game-room/', {
+        const response = await fetch('https://localhost:8000/api/game-room/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
