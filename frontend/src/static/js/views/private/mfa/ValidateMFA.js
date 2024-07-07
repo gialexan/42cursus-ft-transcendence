@@ -68,75 +68,85 @@ async function fetchApiData(url) {
 }
 
 // Função para solicitar a criação do MFA
-function createMFA() {
+async function createMFA() {
     const myHeaders = new Headers();
     myHeaders.append("Cookie", document.cookie);
+    myHeaders.append("Content-Type", "application/json");
 
-	const playerInfo = await fetchApiData('/api/player-info');
-	
-	const raw = JSON.stringify({
-		"username": playerInfo.username
-    });
-	
-    const requestOptions = {
-		method: "GET",
-        headers: myHeaders,
-		body: raw,
-        redirect: "follow",
-        credentials: 'include'  // Inclui os cookies na requisição
-    };
-	
-    fetch("https://localhost/authentication/create/", requestOptions)
-	.then((response) => response.text())
-	.then((result) => {
-		document.querySelector('#createMessage').innerText = 'MFA criado. Por favor, insira o código.';
-		document.querySelector('#mfaCode').style.display = 'block';
-		document.querySelector('#validateButton').style.display = 'block';
-	})
-	.catch((error) => {
-		console.error('Error:', error);
-		document.querySelector('#createMessage').innerText = 'Erro ao criar o MFA';
-	});
+    try {
+        const playerInfo = await fetchApiData('https://localhost/api/player-info');
+
+        if (!playerInfo) {
+            throw new Error('Player info not available');
+        }
+
+        const raw = JSON.stringify({
+            "username": playerInfo.username
+        });
+
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            credentials: 'include'  // Inclui os cookies na requisição
+        };
+
+        const response = await fetch("https://localhost/authentication/create/", requestOptions);
+        if (!response.ok) {
+            throw new Error(`Failed to create MFA: ${response.statusText}`);
+        }
+        const result = await response.text();
+
+        document.querySelector('#createMessage').innerText = 'MFA criado. Por favor, insira o código.';
+        document.querySelector('#mfaCode').style.display = 'block';
+        document.querySelector('#validateButton').style.display = 'block';
+    } catch (error) {
+        console.error('Error:', error);
+        document.querySelector('#createMessage').innerText = 'Erro ao criar o MFA';
+    }
 }
 
 // Função para validar MFA
-function validateMFA(mfaCode) {
-	const myHeaders = new Headers();
+async function validateMFA(mfaCode) {
+    const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-	
-	const playerInfo = await fetchApiData('/api/player-info');
 
-	const raw = JSON.stringify({
-        "mfa_code": mfaCode,
-		"username": playerInfo.username
-    });
+    try {
+        const playerInfo = await fetchApiData('https://localhost/api/player-info');
 
-    const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-        credentials: 'include'  // Inclui os cookies na requisição
-    };
+        if (!playerInfo) {
+            throw new Error('Player info not available');
+        }
 
-    fetch("http://localhost:80/authentication/validate/", requestOptions)
-        .then((response) => response.json())
-        .then((result) => {
-            if (result.status === 'success') {
-                // Exibir pop-up de sucesso
-                alert('MFA validado com sucesso!');
-
-                // Salvar token no localStorage
-                localStorage.setItem('tokenMfaValid', 'true');
-
-                // Redirecionar para /dashboard
-                navigateTo('/dashboard');
-            } else {
-                document.querySelector('#responseMessage').innerText = JSON.stringify(result);
-            }
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            document.querySelector('#responseMessage').innerText = 'Erro ao validar o MFA';
+        const raw = JSON.stringify({
+            "mfa_code": mfaCode,
+            "username": playerInfo.username
         });
+
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            credentials: 'include'  // Inclui os cookies na requisição
+        };
+
+        const response = await fetch("https://localhost/authentication/validate/", requestOptions);
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            // Exibir pop-up de sucesso
+            alert('MFA validado com sucesso!');
+
+            // Salvar token no localStorage
+            localStorage.setItem('tokenMfaValid', 'true');
+
+            // Redirecionar para /dashboard
+            navigateTo('/dashboard');
+        } else {
+            document.querySelector('#responseMessage').innerText = JSON.stringify(result);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        document.querySelector('#responseMessage').innerText = 'Erro ao validar o MFA';
+    }
 }

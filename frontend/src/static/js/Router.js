@@ -38,7 +38,7 @@ export async function Router() {
             component = await Dashboard();
             break;
         case '/mfa':
-            component = await ValidateMFA();
+            component = ValidateMFA();
             break;            
         case '/profile':
             component = await Profile();

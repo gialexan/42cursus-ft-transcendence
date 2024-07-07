@@ -3,6 +3,7 @@
 # Migrate database from SQLite3 to PostgreSQL
 python src/manage.py makemigrations account
 python src/manage.py makemigrations matchmaker
+python src/manage.py makemigrations authentication
 python src/manage.py makemigrations
 python src/manage.py migrate
 
