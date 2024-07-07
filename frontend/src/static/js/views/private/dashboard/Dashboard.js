@@ -98,10 +98,10 @@ export default async function Dashboard() {
         <div class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
                 <img class="px-3" src="/static/images/logo-mini.svg" alt="Logo">
-                <span class="navbar-brand mb-0 h1">${playerInfo ? `Welcome, ${playerInfo.nickname}` : 'Welcome'}</span>
+                <span class="navbar-brand mb-0 h1">${playerInfo ? `Olá, ${playerInfo.nickname}` : 'Welcome'}</span>
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <button type="button" class="btn btn-link nav-link" onclick="navigateToProfile()">Profile</button>
+                        <button type="button" class="btn btn-link nav-link" onclick="navigateToProfile()">Perfil</button>
                     </li>
                 </ul>
             </div>
@@ -135,14 +135,14 @@ export default async function Dashboard() {
                 <!-- Right column for Players Status and Scoreboard -->
                 <div class="col-md-6">
                     <div class="card">
-                        <div class="card-header">Players Status</div>
+                        <div class="card-header">Estatus dos jogadores</div>
                         <div class="card-body">
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Player</th>
+                                        <th scope="col">Jogador</th>
                                         <th scope="col">Status</th>
-                                        <th scope="col">Actions</th>
+                                        <th scope="col">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody id="players-table-body">${playersHtml}</tbody>
@@ -150,7 +150,7 @@ export default async function Dashboard() {
                         </div>
                     </div>
                     <div class="card mt-4">
-                        <div class="card-header">Score Points</div>
+                        <div class="card-header">Pontos</div>
                         <div class="card-body">
                             <table class="table">
                                 <thead>

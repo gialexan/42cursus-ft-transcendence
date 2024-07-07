@@ -14,10 +14,10 @@ export default function PongPvP2Players() {
                                     <div class="collapse navbar-collapse" id="navbarNav">
                                         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                                             <li class="nav-item">
-                                                <button type="button" class="btn btn-link nav-link" onclick="navigateToProfile()">Profile</button>
+                                                <button type="button" class="btn btn-link nav-link" onclick="navigateToProfile()">Perfil</button>
                                             </li>
                                             <li class="nav-item">
-                                                <button class="btn btn-link nav-link" id="backToDashboard">Dashboard</button>
+                                                <button class="btn btn-link nav-link" id="backToDashboard">Painel</button>
                                             </li>
                                         </ul>
                                     </div>
@@ -61,6 +61,17 @@ export default function PongPvP2Players() {
             gameMain();
         });
     });
+
+    const backToDashboardButton = element.querySelector('#backToDashboard');
+    backToDashboardButton.addEventListener('click', (event) => {
+        disconnectWebSocketChat();
+        event.preventDefault();
+        navigateTo('/dashboard');
+    });
+
+    window.navigateToProfile = function() {
+        navigateTo('/profile');
+    };
 
     return element;
 }

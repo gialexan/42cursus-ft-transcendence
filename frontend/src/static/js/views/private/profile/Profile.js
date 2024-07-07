@@ -52,17 +52,14 @@ export default async function Profile() {
                             <div class="navbar navbar-expand-lg navbar-light bg-light">
                                 <div class="container-fluid">
                                     <img class="px-3" src="/static/images/logo-mini.svg" alt="Logo">
-                                    <span class="navbar-brand mb-0 h1">${userInfo ? `Welcome, ${userInfo.nickname}` : 'Welcome'}</span>
+                                    <span class="navbar-brand mb-0 h1">${userInfo ? `Olá, ${userInfo.nickname}` : 'Welcome'}</span>
                                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                                         <span class="navbar-toggler-icon"></span>
                                     </button>
                                     <div class="collapse navbar-collapse" id="navbarNav">
                                         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                                             <li class="nav-item">
-                                                <button type="button" class="btn btn-link nav-link" onclick="navigateToProfile()">Profile</button>
-                                            </li>
-                                            <li class="nav-item">
-                                                <button class="btn btn-link nav-link" id="backToDashboard">Dashboard</button>
+                                                <button class="btn btn-link nav-link" id="backToDashboard">Painel</button>
                                             </li>
                                         </ul>
                                     </div>
@@ -71,10 +68,10 @@ export default async function Profile() {
                 <div class="container mt-3">
                     <div class="row justify-content-between">
                     <div class="card p-3">
-                        <div class="card-header">Edit Profile</div>
+                        <div class="card-header">Editar perfil</div>
                         <form id="profileForm">
                             <div class="mb-3">
-                                <label for="nickname" class="form-label">Nickname</label>
+                                <label for="nickname" class="form-label">Apelido</label>
                                 <input type="text" class="form-control" id="nickname" value="${userInfo.nickname}" required>
                             </div>
                             <div class="mb-3">
@@ -149,6 +146,13 @@ export default async function Profile() {
 
             renderProfileForm(); // Chamar a função para renderizar o formulário
         }
+
+        const backToDashboardButton = element.querySelector('#backToDashboard');
+        backToDashboardButton.addEventListener('click', (event) => {
+            disconnectWebSocketChat();
+            event.preventDefault();
+            navigateTo('/dashboard');
+        });
 
         return element;
     } catch (error) {
