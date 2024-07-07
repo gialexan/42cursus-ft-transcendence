@@ -1,5 +1,7 @@
+import { navigateTo } from '/static/js/Router.js';
+
 // Game settings and configurations
-const GAME_FONT = 'Press Start 2P';
+const GAME_FONT = "SANS";
 
 // Game mode options
 const GAME_MODE = {
@@ -21,7 +23,7 @@ const SETTINGS = {
     MAX_BALL_SPEED: 10,
     BALL_SPEED_INCREASE: 0.05,
     PLAYER_SPEED: 10,
-    GAME_MODE: GAME_MODE.SOLO_PLAYER, // 'single' or 'local'
+    GAME_MODE: GAME_MODE.TRAINING, // 'single' or 'local'
     AI_DIFFICULTY: 'medium', // 'easy', 'medium', 'hard', 'legend'
     AI_TIME_STEPS: 0.01667, // Considering 60 fps
     WINNING_SCORE: 3, // Define winning score
@@ -362,18 +364,18 @@ class Render {
             SETTINGS.INITIAL_BALL_SPEED * (Math.random() < 0.5 ? -1 : 1);
     }
 
+    // TODO : Estava dando erro de fonte, deixamos valores fixos para não ter problema
     drawCountdown(count) {
-        this.font.load().then(() => {
-            this.context.font = SETTINGS.COUNTDOWN_FONT;
-            this.context.fillStyle = SETTINGS.BACKGROUND_COLOR;
-            // Fill the canvas with background color
-            this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-            this.context.fillStyle = SETTINGS.COUNTDOWN_STYLE;
-            this.context.textAlign = SETTINGS.COUNTDOWN_ALIGN;
-            this.context.fillText(
-                count > 0 ? `${count}` : SETTINGS.COUNTDOWN_MESSAGE,
-                this.canvas.width / 2, this.canvas.height / 2);
-        });
+        this.context.font = '48px "Open Sans"';
+        this.context.fillStyle = '#000000'; // Defina a cor de fundo aqui
+        // Fill the canvas with background color
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.fillStyle = '#FFFFFF'; // Defina a cor do texto aqui
+        this.context.textAlign = 'center'; // Defina o alinhamento do texto aqui
+        this.context.fillText(
+            count > 0 ? `${count}` : 'GO!',
+            this.canvas.width / 2, this.canvas.height / 2
+        );
     }
 
     _drawBall(ball) {
@@ -440,6 +442,7 @@ class Render {
 
 class Game {
     constructor(canvas) {
+        console.log("Constructor - Running");
         this.canvas = canvas;
         this.ball = new Ball(canvas);
         this.render = new Render(canvas);
@@ -457,16 +460,21 @@ class Game {
         this.isGamePaused = false;
 
         document.getElementById('restartGameButton').addEventListener('click', () => {
+            console.log("CONSTRUTOCTOR Clicado no botão RESTART GAME!")
             this.restartGame();
         });
     }
 
     start() {
         // Increase speed every second
-        setInterval(
-            () => this._increaseBallSpeed(), SETTINGS.COUNTDOWN_INTERVAL);
+        setInterval(() => this._increaseBallSpeed(), SETTINGS.COUNTDOWN_INTzERVAL);
         this._startCountdown();
-        this._addTouchControls();  // Add touch controls when the game starts
+        
+        // Add touch controls only if on a mobile device
+        // TODO: Da erro quando o browser tenta carregar
+        if (window.matchMedia("(max-width: 767px)").matches) {
+            this._addTouchControls();
+        }
     }
 
     _increaseBallSpeed() {
@@ -497,7 +505,32 @@ class Game {
 
         this.isGameRunning = false;
         this.isGamePaused = true;
+
+        // Adiciona event listeners para os botões do modal
+        document.getElementById('endGameButton').addEventListener('click', () => {
+            this._handleEndGame();
+        });
+
+        document.getElementById('restartGameButton').addEventListener('click', () => {
+            console.log("restartGameButton - restartando o jogo")
+        });
+
     }
+
+    _handleEndGame() {
+        // Lógica para finalizar o jogo
+        console.log('Game ended 1');
+        navigateTo("/dashboard");
+
+        // Outras ações necessárias para finalizar o jogo
+    }
+
+    // _handleRestartGame() {
+    //     // Lógica para reiniciar o jogo
+    //     console.log('_handleRestartGame - Game restarted');
+    //     this._handleRestartGame();
+    //     // Outras ações necessárias para reiniciar o jogo
+    // }    
 
     /**
      * This method restarts the game by resetting the scores,
@@ -508,6 +541,7 @@ class Game {
      *
     */
     restartGame() {
+        console.log("restartGame - Restartando o jogo sozinho!")
         this.player1Score = 0;
         this.player2Score = 0;
         this.isGamePaused = false;
@@ -529,6 +563,7 @@ class Game {
     }
 
     _gameLoop() {
+        console.log("Game looping")
         if (this.isGameRunning) {
             this._update();
             this.render.drawGame(
@@ -641,12 +676,14 @@ class Game {
 }
 
 function main() {
+    console.log("Startando a main", new Date().toISOString())
     // Initialize canvas, i.e., 2D pong table's width and height
     const canvas = document.getElementById('gameCanvas');
     canvas.width = SETTINGS.CANVAS_WIDTH;
     canvas.height = SETTINGS.CANVAS_HEIGHT;
 
     const game = new Game(canvas);
+    console.log("Criado um novo jogo", new Date().toISOString());
 
     // Start the game
     game.start();
