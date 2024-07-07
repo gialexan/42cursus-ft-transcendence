@@ -4,7 +4,10 @@ import Register from './views/public/register/Register.js';
 import Dashboard from './views/private/dashboard/Dashboard.js';
 import Profile from './views/private/profile/Profile.js';
 import Chat from './views/private/chat/Chat.js';
-import Pong from './views/private/pong/Pong.js';
+import PongWall from './views/private/pong/PongWall.js';
+import PongVsAI from './views/private/pong/PongVsAI.js';
+import PongPvP2Players from './views/private/pong/PongPvP2Players.js';
+import PongPvP4Players from './views/private/pong/PongPvP4Players.js';
 import ValidateMFA from './views/private/mfa/ValidateMFA.js';
 import GameRoom from './views/private/gameRoom/GameRoom.js';
 
@@ -44,8 +47,17 @@ export async function Router() {
             component = await Chat();
             break;                       
         case '/pong':
-            component = Pong();
+            component = PongWall();
             break;
+        case '/pong-ai':
+            component = PongVsAI();
+            break;      
+        case '/pong-pvp2':
+            component = PongPvP2Players();
+            break;      
+        case '/pong-pvp4':
+            component = PongPvP4Players();
+            break;                                        
         case '/game-room':
             const uuid = queryParams.uuid;
             component = await GameRoom(uuid); // Aguarde a resolução da função assíncrona

@@ -1,5 +1,5 @@
 // Game settings and configurations
-const GAME_FONT = 'Press Start 2P';
+const GAME_FONT = "SANS";
 
 // Game mode options
 const GAME_MODE = {
@@ -21,7 +21,7 @@ const SETTINGS = {
     MAX_BALL_SPEED: 10,
     BALL_SPEED_INCREASE: 0.05,
     PLAYER_SPEED: 10,
-    GAME_MODE: GAME_MODE.SOLO_PLAYER, // 'single' or 'local'
+    GAME_MODE: GAME_MODE.TRAINING, // 'single' or 'local'
     AI_DIFFICULTY: 'medium', // 'easy', 'medium', 'hard', 'legend'
     AI_TIME_STEPS: 0.01667, // Considering 60 fps
     WINNING_SCORE: 3, // Define winning score
@@ -362,18 +362,18 @@ class Render {
             SETTINGS.INITIAL_BALL_SPEED * (Math.random() < 0.5 ? -1 : 1);
     }
 
+    // TODO : Estava dando erro de fonte, deixamos valores fixos para não ter problema
     drawCountdown(count) {
-        this.font.load().then(() => {
-            this.context.font = SETTINGS.COUNTDOWN_FONT;
-            this.context.fillStyle = SETTINGS.BACKGROUND_COLOR;
-            // Fill the canvas with background color
-            this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-            this.context.fillStyle = SETTINGS.COUNTDOWN_STYLE;
-            this.context.textAlign = SETTINGS.COUNTDOWN_ALIGN;
-            this.context.fillText(
-                count > 0 ? `${count}` : SETTINGS.COUNTDOWN_MESSAGE,
-                this.canvas.width / 2, this.canvas.height / 2);
-        });
+        this.context.font = '48px "Open Sans"';
+        this.context.fillStyle = '#000000'; // Defina a cor de fundo aqui
+        // Fill the canvas with background color
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.fillStyle = '#FFFFFF'; // Defina a cor do texto aqui
+        this.context.textAlign = 'center'; // Defina o alinhamento do texto aqui
+        this.context.fillText(
+            count > 0 ? `${count}` : 'GO!',
+            this.canvas.width / 2, this.canvas.height / 2
+        );
     }
 
     _drawBall(ball) {
@@ -438,6 +438,7 @@ class Render {
     }
 }
 
+
 class Game {
     constructor(canvas) {
         this.canvas = canvas;
@@ -463,10 +464,14 @@ class Game {
 
     start() {
         // Increase speed every second
-        setInterval(
-            () => this._increaseBallSpeed(), SETTINGS.COUNTDOWN_INTERVAL);
+        setInterval(() => this._increaseBallSpeed(), SETTINGS.COUNTDOWN_INTERVAL);
         this._startCountdown();
-        this._addTouchControls();  // Add touch controls when the game starts
+        
+        // Add touch controls only if on a mobile device
+        // TODO: Da erro quando o browser tenta carregar
+        if (window.matchMedia("(max-width: 767px)").matches) {
+            this._addTouchControls();
+        }
     }
 
     _increaseBallSpeed() {

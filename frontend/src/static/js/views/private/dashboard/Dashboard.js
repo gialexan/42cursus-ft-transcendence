@@ -112,11 +112,13 @@ export default async function Dashboard() {
                 <!-- Left column for Games -->
                 <div class="col-md-6">
                     <div class="card">
-                        <div class="card-header">Modos de jogar</div>
+                        <div class="card-header">Modos Offline</div>
                         <div class="card-body">
                             <p>Está pronto para se divertir? No modo Han Solo, você encara a clássica batalha de Pong sozinho, onde a rapidez e a precisão são suas melhores aliadas. Ou, se prefere um desafio mais intenso, enfrente a Skynet e teste suas habilidades contra a IA. Prove que os humanos ainda são superiores e que as máquinas não podem nos dominar... ainda!</p>
                             <button type="button" class="btn btn-primary" onclick="handleGameMode(0)">Han Solo</button>
                             <button type="button" class="btn btn-secondary" onclick="handleGameMode(1)">Contra a Skynet</button>
+                            <button type="button" class="btn btn-secondary" onclick="handleGameMode(2)">PvP Local 2 Players</button>
+                            <button type="button" class="btn btn-secondary" onclick="handleGameMode(3)">PvP Local 4 Players</button>
                         </div>
                     </div>
                     <div class="card mt-4">
@@ -235,15 +237,30 @@ window.handleGameparty = async function(userUuid) {
 }
 
 window.handleGameMode = async function(gameRoomType) {
-    console.log('Starting game mode:', gameRoomType);
-    
+
+    if (gameRoomType == 0) {
+        console.log('Starting game mode:', gameRoomType);
+        navigateTo("http://localhost/pong");
+        return
+    } else if (gameRoomType == 1) {
+        console.log('Starting game mode:', gameRoomType);
+        navigateTo("http://localhost/pong-ai");
+    } else if (gameRoomType == 2) {
+        console.log('Starting game mode:', gameRoomType);
+        navigateTo("http://localhost/pong-pvp2");
+    } else if (gameRoomType == 3) {
+        console.log('Starting game mode:', gameRoomType);
+        navigateTo("http://localhost/pong-pvp4");
+    }
+
+
     const playerInfo = await fetchApiData('/api/player-info');
     if (!playerInfo || !playerInfo.user_uuid) {
         console.error('Failed to get player info.');
         return;
     }
 
-    createGameRoom(playerInfo.user_uuid, null, gameRoomType);
+    // createGameRoom(playerInfo.user_uuid, null, gameRoomType);
 }
 
 async function createGameRoom(uuid_player_1, uuid_player_2, game_room_type) {
