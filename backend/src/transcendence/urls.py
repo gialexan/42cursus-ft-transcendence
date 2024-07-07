@@ -6,4 +6,5 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('ws/', include('events.urls')),
     path('authentication/', include('authentication.urls')),
+    path('', include('django_prometheus.urls')),
 ]
