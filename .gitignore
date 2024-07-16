@@ -12,5 +12,10 @@ key.json
 *.pem
 *.pyc
 
+env
 __pycache__
 .ruff.toml
+**migrations**
+
+
+postgres_data/

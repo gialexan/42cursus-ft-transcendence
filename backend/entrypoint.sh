@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # Migrate database from SQLite3 to PostgreSQL
-python transcendence/manage.py makemigrations
-python transcendence/manage.py migrate
-
-python transcendence/manage.py collectstatic
+python src/manage.py makemigrations account
+python src/manage.py makemigrations matchmaker
+python src/manage.py makemigrations authentication
+python src/manage.py makemigrations
+python src/manage.py migrate
 
 # Start Server
-python transcendence/manage.py runserver 0.0.0.0:8000
+cd src && daphne -b 0.0.0.0 -p 8000 transcendence.asgi:application
